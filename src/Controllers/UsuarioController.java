@@ -5,7 +5,7 @@
 package Controllers;
 
 import Controllers.Interfaces.IUsuarioController;
-import Models.Usuario;
+import Entities.Usuario;
 import java.util.List;
 
 /**
