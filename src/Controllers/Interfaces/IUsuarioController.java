@@ -4,44 +4,13 @@
  */
 package Controllers.Interfaces;
 
-import Models.Usuario;
-import java.util.List;
+import Controllers.Interfaces.Shared.ICrudRepository;
+import Entities.Usuario;
 
 /**
  *
  * @author euris
  */
-public interface IUsuarioController {
-
-    /**
-     *
-     * @return
-     */
-    List<Usuario> getAll();
-
-    /**
-     *
-     * @param id
-     * @return
-     */
-    Usuario getById(int id);
-
-    /**
-     *
-     * @param usuario
-     */
-    void create(Usuario usuario);
-
-    /**
-     *
-     * @param id
-     * @param usuario
-     */
-    void update(int id, Usuario usuario);
-
-    /**
-     *
-     * @param id
-     */
-    void delete(int id);
+public interface IUsuarioController extends ICrudRepository<Usuario> {
+    
 }
