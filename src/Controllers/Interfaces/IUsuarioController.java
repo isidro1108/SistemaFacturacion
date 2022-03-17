@@ -4,13 +4,13 @@
  */
 package Controllers.Interfaces;
 
-import Controllers.Interfaces.Shared.ICrudRepository;
 import Entities.Usuario;
+import Controllers.Interfaces.Shared.IGenericController;
 
 /**
  *
  * @author euris
  */
-public interface IUsuarioController extends ICrudRepository<Usuario> {
+public interface IUsuarioController extends IGenericController<Usuario> {
     
 }

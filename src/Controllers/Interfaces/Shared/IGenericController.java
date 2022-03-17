@@ -11,7 +11,7 @@ import java.util.List;
  * @author euris
  * @param <T>
  */
-public interface ICrudRepository<T> {
+public interface IGenericController<T> {
     /**
      *
      * @return
