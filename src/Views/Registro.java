@@ -15,6 +15,8 @@ public class Registro extends javax.swing.JFrame {
      */
     public Registro() {
         initComponents();
+        setResizable(false);
+        setTitle("Registro");
     }
 
     /**
@@ -40,6 +42,7 @@ public class Registro extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
