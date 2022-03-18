@@ -4,7 +4,7 @@
  */
 package sistemafacturacion;
 
-import Controllers.Interfaces.IUsuarioController;
+import Controllers.UsuarioController;
 import Entities.Usuario;
 import Views.Login;
 import Views.Registro;
@@ -15,17 +15,12 @@ import java.util.List;
  * @author euris
  */
 public class SistemaFacturacion {
-    public static IUsuarioController _usuarioController;
-    
-    public SistemaFacturacion(IUsuarioController usuarioController) {
-        _usuarioController = usuarioController;
-    }
-
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        List<Usuario> usuarios = _usuarioController.getAll();
+        UsuarioController usuarioController = new UsuarioController();
+        List<Usuario> usuarios = usuarioController.getAll();
         
         if (usuarios.isEmpty()) {
             Registro registro = new Registro();

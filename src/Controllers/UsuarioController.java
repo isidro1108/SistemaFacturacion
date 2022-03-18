@@ -21,15 +21,15 @@ import java.util.logging.Logger;
  * @author euris
  */
 public class UsuarioController implements IUsuarioController {
-    private final DataContext _dbContext;
-    
-    public UsuarioController(DataContext dbContext) {
-        _dbContext = dbContext;
+    private final DataContext dbContext;
+
+    public UsuarioController() {
+        this.dbContext = new DataContext();
     }
 
     @Override
     public List<Usuario> getAll() {
-        Connection connection = _dbContext.connect();
+        Connection connection = dbContext.connect();
         List<Usuario> usuarios = new ArrayList<>();
         
         String sql = "SELECT * FROM usuario";
