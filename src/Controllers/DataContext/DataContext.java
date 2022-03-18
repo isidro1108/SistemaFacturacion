@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 public class DataContext {
     private final String database = "sistema_facturacion";
     private final String user = "postgres";
-    private final String password = "Immnqwerty071102";
+    private final String password = "postgreSQL1108";
     private final String host = "localhost";
     private final String port = "5432";
     private final String driver = "org.postgresql.Driver";
