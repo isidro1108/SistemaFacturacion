@@ -7,7 +7,7 @@ package sistemafacturacion;
 import Controllers.UsuarioController;
 import Entities.Usuario;
 import Views.Login;
-import Views.Registro;
+import Views.WelcomeUserAdmin;
 import java.util.List;
 
 /**
@@ -23,8 +23,8 @@ public class SistemaFacturacion {
         List<Usuario> usuarios = usuarioController.getAll();
         
         if (usuarios.isEmpty()) {
-            Registro registro = new Registro();
-            registro.setVisible(true);
+            WelcomeUserAdmin welcomeView = new WelcomeUserAdmin();
+            welcomeView.setVisible(true);
         } else {
             Login login = new Login();
             login.setVisible(true);
