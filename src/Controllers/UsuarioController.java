@@ -46,6 +46,8 @@ public class UsuarioController implements IUsuarioController {
                 usuario.setUsername(result.getString("username"));
                 usuario.setEmail(result.getString("email"));
                 usuario.setPassword(result.getString("password"));
+                
+                usuarios.add(usuario);
             }
         } catch (SQLException ex) {
             Logger.getLogger(UsuarioController.class.getName()).log(Level.SEVERE, null, ex);
