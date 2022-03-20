@@ -5,9 +5,14 @@
 package Views;
 
 import Controllers.GenericEntityController;
+import Controllers.UsuarioController;
+import Controllers.Utils.Utils;
 import Entities.GenericEntity;
+import Entities.Usuario;
 import Views.Constants.Constants;
+import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -15,11 +20,15 @@ import java.util.List;
  */
 public class Registro extends javax.swing.JFrame {
     private final GenericEntityController genderController;
+    private final GenericEntityController roleController;
+    private final UsuarioController usuarioController;
     /**
      * Creates new form Registro
      */
     public Registro() {
         this.genderController = new GenericEntityController("gender");
+        this.roleController = new GenericEntityController("role");
+        this.usuarioController = new UsuarioController();
         
         initComponents();
         setResizable(false);
@@ -29,12 +38,32 @@ public class Registro extends javax.swing.JFrame {
         jLabel1.setForeground(Constants.Colors.DARK_BLUE);        
     }
     
+    List<Integer> idsGenders = new ArrayList<>();
     private void getValuesComboBox() {
         List<GenericEntity> genders = this.genderController.getAll();
         
         for (int i = 0; i < genders.size(); i++) {
-            cBoxGender.addItem(genders.get(i).getName());
+            GenericEntity gender = genders.get(i);
+            cBoxGender.addItem(gender.getName());
+            idsGenders.add(gender.getId());
         }
+    }
+    
+    private void clearForm() {
+        txtName.setText("");
+        txtLastName.setText("");
+        txtUsername.setText("");
+        txtEmail.setText("");
+        txtPassword.setText("");
+        txtPasswordVerified.setText("");
+    }
+    
+    private boolean formIsValid() {
+        return !txtName.getText().equals("") &&
+                !txtLastName.getText().equals("") &&
+                !txtUsername.getText().equals("") &&
+                !txtEmail.getText().equals("") &&
+                txtPassword.getPassword().length != 0;
     }
 
     /**
@@ -60,9 +89,9 @@ public class Registro extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         cBoxGender = new javax.swing.JComboBox<>();
-        txtVerifiedPassword = new javax.swing.JPasswordField();
+        txtPasswordVerified = new javax.swing.JPasswordField();
         txtPassword = new javax.swing.JPasswordField();
-        jButton1 = new javax.swing.JButton();
+        btnRegistrarse = new javax.swing.JButton();
         jCheckBox1 = new javax.swing.JCheckBox();
         jCheckBox2 = new javax.swing.JCheckBox();
 
@@ -101,7 +130,7 @@ public class Registro extends javax.swing.JFrame {
 
         jLabel7.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(0, 0, 255));
-        jLabel7.setLabelFor(txtVerifiedPassword);
+        jLabel7.setLabelFor(txtPasswordVerified);
         jLabel7.setText("Verificar Contraseña:");
 
         jLabel8.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
@@ -109,10 +138,15 @@ public class Registro extends javax.swing.JFrame {
         jLabel8.setLabelFor(cBoxGender);
         jLabel8.setText("Género:");
 
-        jButton1.setBackground(new java.awt.Color(0, 0, 255));
-        jButton1.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Registrarse");
+        btnRegistrarse.setBackground(new java.awt.Color(0, 0, 255));
+        btnRegistrarse.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        btnRegistrarse.setForeground(new java.awt.Color(255, 255, 255));
+        btnRegistrarse.setText("Registrarse");
+        btnRegistrarse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegistrarseActionPerformed(evt);
+            }
+        });
 
         jCheckBox1.setText("Mostrar");
         jCheckBox1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -172,14 +206,14 @@ public class Registro extends javax.swing.JFrame {
                                 .addGap(43, 43, 43)
                                 .addComponent(jLabel7)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtVerifiedPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(txtPasswordVerified, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jCheckBox1)
                             .addComponent(jCheckBox2)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(255, 255, 255)
-                        .addComponent(jButton1)))
+                        .addComponent(btnRegistrarse)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -215,10 +249,10 @@ public class Registro extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtVerifiedPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtPasswordVerified, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jCheckBox1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnRegistrarse, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(16, 16, 16))
         );
 
@@ -246,11 +280,42 @@ public class Registro extends javax.swing.JFrame {
     }//GEN-LAST:event_jCheckBox2MouseClicked
 
     private void jCheckBox1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jCheckBox1MouseClicked
-        if (txtVerifiedPassword.getEchoChar() != (char)0) {
-            echoChar = txtVerifiedPassword.getEchoChar();
+        if (txtPasswordVerified.getEchoChar() != (char)0) {
+            echoChar = txtPasswordVerified.getEchoChar();
         }
-        txtVerifiedPassword.setEchoChar(jCheckBox1.isSelected() ? (char)0 : echoChar);
+        txtPasswordVerified.setEchoChar(jCheckBox1.isSelected() ? (char)0 : echoChar);
     }//GEN-LAST:event_jCheckBox1MouseClicked
+
+    private void btnRegistrarseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarseActionPerformed
+        Usuario usuario = new Usuario();
+        String password = new String(txtPassword.getPassword());
+        String passwordVerified = new String(txtPasswordVerified.getPassword());
+        
+        if (formIsValid()) {
+            if (password.equals(passwordVerified)) {
+                if (Utils.isFirstUser()) {
+                    GenericEntity role = this.roleController.getByName("admin");
+                    usuario.setIdRole(role.getId());
+                }
+
+                usuario.setName(txtName.getText());
+                usuario.setLastName(txtLastName.getText());
+                usuario.setUsername(txtUsername.getText());
+                usuario.setIdGender(idsGenders.get(cBoxGender.getSelectedIndex()));
+                usuario.setEmail(txtEmail.getText());
+                usuario.setPassword(new String(txtPassword.getPassword()));
+                
+                this.usuarioController.create(usuario);
+                
+                JOptionPane.showMessageDialog(null, "Usuario registrado con éxito", "Success", JOptionPane.INFORMATION_MESSAGE);
+                clearForm();
+            } else {
+                JOptionPane.showMessageDialog(null, "Las contraseñas no coinciden", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Debe completar todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnRegistrarseActionPerformed
 
     /**
      * @param args the command line arguments
@@ -288,8 +353,8 @@ public class Registro extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnRegistrarse;
     private javax.swing.JComboBox<String> cBoxGender;
-    private javax.swing.JButton jButton1;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JLabel jLabel1;
@@ -305,7 +370,7 @@ public class Registro extends javax.swing.JFrame {
     private javax.swing.JTextField txtLastName;
     private javax.swing.JTextField txtName;
     private javax.swing.JPasswordField txtPassword;
+    private javax.swing.JPasswordField txtPasswordVerified;
     private javax.swing.JTextField txtUsername;
-    private javax.swing.JPasswordField txtVerifiedPassword;
     // End of variables declaration//GEN-END:variables
 }
