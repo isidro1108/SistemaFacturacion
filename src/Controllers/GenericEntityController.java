@@ -56,7 +56,43 @@ public class GenericEntityController implements IBaseGenericController<GenericEn
 
     @Override
     public GenericEntity getById(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Connection connection = dbContext.connect();
+        GenericEntity entity = new GenericEntity();
+        
+        String sql = "SELECT * FROM " + this.entityType + " WHERE id=" + id;
+        
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(sql);
+            if (result.next()) {
+                entity.setId(result.getInt("id"));
+                entity.setName(result.getString("name"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(GenericEntityController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return entity;
+    }
+    
+    public GenericEntity getByName(String name) {
+        Connection connection = dbContext.connect();
+        GenericEntity entity = new GenericEntity();
+        
+        String sql = "SELECT * FROM " + this.entityType + " WHERE name='" + name + "'";
+        
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(sql);
+            if (result.next()) {
+                entity.setId(result.getInt("id"));
+                entity.setName(result.getString("name"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(GenericEntityController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return entity;
     }
     
 }
