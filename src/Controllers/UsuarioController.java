@@ -32,7 +32,7 @@ public class UsuarioController implements IUsuarioController {
         Connection connection = dbContext.connect();
         List<Usuario> usuarios = new ArrayList<>();
         
-        String sql = "SELECT * FROM usuario";
+        String sql = "SELECT * FROM \"user\" ORDER BY id";
         try {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(sql);
@@ -41,6 +41,8 @@ public class UsuarioController implements IUsuarioController {
                 Usuario usuario = new Usuario();
                 
                 usuario.setId(result.getInt("id"));
+                usuario.setIdRole(result.getInt("id_role"));
+                usuario.setIdGender(result.getInt("id_gender"));
                 usuario.setName(result.getString("name"));
                 usuario.setLastName(result.getString("last_name"));
                 usuario.setUsername(result.getString("username"));
@@ -63,7 +65,22 @@ public class UsuarioController implements IUsuarioController {
 
     @Override
     public void create(Usuario usuario) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Connection connection = dbContext.connect();
+        String sql = "INSERT INTO \"user\" (id_role, id_gender, name, last_name, username, email, password)"
+                + "VALUES ('"+ usuario.getIdRole() +"', "
+                + "'"+ usuario.getIdGender() +"', "
+                + "'"+ usuario.getName() +"', "
+                + "'"+ usuario.getLastName() +"', "
+                + "'"+ usuario.getUsername() +"', "
+                + "'"+ usuario.getEmail() +"', "
+                + "'"+ usuario.getPassword() +"')";
+        
+        try {
+            Statement statement = connection.createStatement();
+            statement.execute(sql);
+        } catch (SQLException ex) {
+            Logger.getLogger(UsuarioController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override

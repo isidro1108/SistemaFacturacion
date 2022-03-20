@@ -10,6 +10,8 @@ package Entities;
  */
 public class Usuario {
     private int id;
+    private int idRole;
+    private int idGender;
     private String name;
     private String lastName;
     private String username;
@@ -22,6 +24,22 @@ public class Usuario {
 
     public void setId(int id) {
         this.id = id;
+    }
+    
+    public int getIdRole() {
+        return idRole;
+    }
+
+    public void setIdRole(int idRole) {
+        this.idRole = idRole;
+    }
+
+    public int getIdGender() {
+        return idGender;
+    }
+
+    public void setIdGender(int idGender) {
+        this.idGender = idGender;
     }
 
     public String getName() {
