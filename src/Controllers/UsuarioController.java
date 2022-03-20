@@ -32,7 +32,7 @@ public class UsuarioController implements IUsuarioController {
         Connection connection = dbContext.connect();
         List<Usuario> usuarios = new ArrayList<>();
         
-        String sql = "SELECT * FROM \"user\" ORDER BY id";
+        String sql = "SELECT * FROM \"user\" ORDER BY id ASC";
         try {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(sql);

@@ -34,7 +34,7 @@ public class GenericEntityController implements IBaseGenericController<GenericEn
         Connection connection = dbContext.connect();
         List<GenericEntity> genericEntities = new ArrayList<>();
         
-        String sql = "SELECT * FROM " + this.entityType + " ORDER BY id";
+        String sql = "SELECT * FROM " + this.entityType + " ORDER BY id ASC";
         try {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(sql);
