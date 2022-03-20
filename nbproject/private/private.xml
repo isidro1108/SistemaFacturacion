@@ -3,15 +3,21 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/Controllers/Utils/Utils.java</file>
             <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/Controllers/Interfaces/Shared/IGenericController.java</file>
             <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/Views/Login.java</file>
-            <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/Views/MainMenu.java</file>
+            <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/Views/Constants/Constants.java</file>
             <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/Views/Registro.java</file>
-            <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/Entities/Usuario.java</file>
             <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/Controllers/UsuarioController.java</file>
+            <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/Views/WelcomeUserAdmin.java</file>
+            <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/Views/MainMenu.java</file>
+            <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/Entities/GenericEntity.java</file>
+            <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/Entities/Usuario.java</file>
+            <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/Controllers/GenericEntityController.java</file>
+            <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/Controllers/Interfaces/Shared/IBaseGenericController.java</file>
             <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/sistemafacturacion/SistemaFacturacion.java</file>
-            <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/Controllers/Interfaces/IUsuarioController.java</file>
             <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/Controllers/DataContext/DataContext.java</file>
+            <file>file:/C:/Users/euris/OneDrive/Documentos/NetBeansProjects/SistemaFacturacion/src/Controllers/Interfaces/IUsuarioController.java</file>
         </group>
     </open-files>
 </project-private>

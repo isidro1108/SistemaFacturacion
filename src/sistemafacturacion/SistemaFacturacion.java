@@ -4,11 +4,9 @@
  */
 package sistemafacturacion;
 
-import Controllers.UsuarioController;
-import Entities.Usuario;
+import Controllers.Utils.Utils;
 import Views.Login;
 import Views.WelcomeUserAdmin;
-import java.util.List;
 
 /**
  *
@@ -19,10 +17,7 @@ public class SistemaFacturacion {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        UsuarioController usuarioController = new UsuarioController();
-        List<Usuario> usuarios = usuarioController.getAll();
-        
-        if (usuarios.isEmpty()) {
+        if (Utils.isFirstUser()) {
             WelcomeUserAdmin welcomeView = new WelcomeUserAdmin();
             welcomeView.setVisible(true);
         } else {
