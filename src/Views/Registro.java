@@ -285,7 +285,7 @@ public class Registro extends javax.swing.JFrame {
         }
         txtPasswordVerified.setEchoChar(jCheckBox1.isSelected() ? (char)0 : echoChar);
     }//GEN-LAST:event_jCheckBox1MouseClicked
-
+   
     private void btnRegistrarseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarseActionPerformed
         Usuario usuario = new Usuario();
         String password = new String(txtPassword.getPassword());
@@ -293,6 +293,8 @@ public class Registro extends javax.swing.JFrame {
         
         if (formIsValid()) {
             if (password.equals(passwordVerified)) {
+                String passwordEncrypted = Utils.encode(password);
+                
                 if (Utils.isFirstUser()) {
                     GenericEntity role = this.roleController.getByName("admin");
                     usuario.setIdRole(role.getId());
@@ -303,7 +305,7 @@ public class Registro extends javax.swing.JFrame {
                 usuario.setUsername(txtUsername.getText());
                 usuario.setIdGender(idsGenders.get(cBoxGender.getSelectedIndex()));
                 usuario.setEmail(txtEmail.getText());
-                usuario.setPassword(new String(txtPassword.getPassword()));
+                usuario.setPassword(passwordEncrypted);
                 
                 this.usuarioController.create(usuario);
                 
