@@ -16,6 +16,8 @@ import java.util.logging.Logger;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import javax.swing.JCheckBox;
+import javax.swing.JPasswordField;
 import org.apache.commons.codec.binary.Base64;
 
 /**
@@ -23,6 +25,8 @@ import org.apache.commons.codec.binary.Base64;
  * @author euris
  */
 public class Utils {
+    private static char echoChar;
+    
 //    Private methods
     private static SecretKeySpec getSecretKeySpec() {
         String KEY = "SistemaFacturacion Java NetBeans";
@@ -41,6 +45,13 @@ public class Utils {
         UsuarioController usuarioController = new UsuarioController();
         List<Usuario> usuarios = usuarioController.getAll();
         return usuarios.isEmpty();
+    }
+    
+    public static void showAndHideText(JPasswordField jPasswordField, JCheckBox jCheckBox) {
+        if (jPasswordField.getEchoChar() != (char)0) {
+            echoChar = jPasswordField.getEchoChar();
+        }
+        jPasswordField.setEchoChar(jCheckBox.isSelected() ? (char)0 : echoChar);
     }
     
     public static String encode(String password) {

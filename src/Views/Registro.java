@@ -271,19 +271,12 @@ public class Registro extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    char echoChar;
     private void jCheckBox2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jCheckBox2MouseClicked
-        if (txtPassword.getEchoChar() != (char)0) {
-            echoChar = txtPassword.getEchoChar();
-        }
-        txtPassword.setEchoChar(jCheckBox2.isSelected() ? (char)0 : echoChar);
+        Utils.showAndHideText(txtPassword, jCheckBox2);
     }//GEN-LAST:event_jCheckBox2MouseClicked
 
     private void jCheckBox1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jCheckBox1MouseClicked
-        if (txtPasswordVerified.getEchoChar() != (char)0) {
-            echoChar = txtPasswordVerified.getEchoChar();
-        }
-        txtPasswordVerified.setEchoChar(jCheckBox1.isSelected() ? (char)0 : echoChar);
+        Utils.showAndHideText(txtPasswordVerified, jCheckBox1);
     }//GEN-LAST:event_jCheckBox1MouseClicked
    
     private void btnRegistrarseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarseActionPerformed
