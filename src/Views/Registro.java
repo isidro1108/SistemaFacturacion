@@ -34,7 +34,7 @@ public class Registro extends javax.swing.JFrame {
         
         initComponents();
         setResizable(false);
-        setIconImage(new ImageIcon(getClass().getResource("/Icons/User.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/Images/Icons/User.png")).getImage());
         setTitle("Registro");
         getValuesComboBox();
         jPanel1.setBackground(Constants.Colors.LIGHT_BLUE);
