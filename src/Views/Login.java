@@ -9,6 +9,7 @@ import Controllers.Utils.Utils;
 import Entities.CustomResponses.AuthCustomResponse;
 import Views.Constants.Constants;
 import java.awt.event.KeyEvent;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 /**
@@ -26,6 +27,7 @@ public class Login extends javax.swing.JFrame {
         
         initComponents();
         setResizable(false);
+        setIconImage(new ImageIcon(getClass().getResource("/Icons/User.png")).getImage());
         setTitle("Iniciar Sesión");
         jPanel1.setBackground(Constants.Colors.LIGHT_BLUE);
         jLabel1.setForeground(Constants.Colors.DARK_BLUE); 
@@ -72,6 +74,12 @@ public class Login extends javax.swing.JFrame {
             }
         });
 
+        txtPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtPasswordKeyPressed(evt);
+            }
+        });
+
         jCheckBox1.setText("Mostrar");
         jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -103,9 +111,9 @@ public class Login extends javax.swing.JFrame {
                         .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(79, Short.MAX_VALUE)
+                .addContainerGap(74, Short.MAX_VALUE)
                 .addComponent(jLabel1)
-                .addGap(69, 69, 69))
+                .addGap(74, 74, 74))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -159,6 +167,12 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, response.getMessage(), response.getTitle(), response.getMessageType());
         }
     }//GEN-LAST:event_btnLoginActionPerformed
+
+    private void txtPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPasswordKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            btnLogin.doClick();
+        }
+    }//GEN-LAST:event_txtPasswordKeyPressed
 
     /**
      * @param args the command line arguments

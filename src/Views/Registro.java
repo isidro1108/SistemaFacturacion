@@ -10,8 +10,10 @@ import Controllers.Utils.Utils;
 import Entities.GenericEntity;
 import Entities.Usuario;
 import Views.Constants.Constants;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 /**
@@ -32,6 +34,7 @@ public class Registro extends javax.swing.JFrame {
         
         initComponents();
         setResizable(false);
+        setIconImage(new ImageIcon(getClass().getResource("/Icons/User.png")).getImage());
         setTitle("Registro");
         getValuesComboBox();
         jPanel1.setBackground(Constants.Colors.LIGHT_BLUE);
@@ -137,6 +140,18 @@ public class Registro extends javax.swing.JFrame {
         jLabel8.setForeground(new java.awt.Color(0, 0, 255));
         jLabel8.setLabelFor(cBoxGender);
         jLabel8.setText("Género:");
+
+        txtPasswordVerified.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtPasswordVerifiedKeyPressed(evt);
+            }
+        });
+
+        txtPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtPasswordKeyPressed(evt);
+            }
+        });
 
         btnRegistrarse.setBackground(new java.awt.Color(0, 0, 255));
         btnRegistrarse.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
@@ -314,6 +329,18 @@ public class Registro extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Debe completar todos los campos", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnRegistrarseActionPerformed
+
+    private void txtPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPasswordKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            btnRegistrarse.doClick();
+        }
+    }//GEN-LAST:event_txtPasswordKeyPressed
+
+    private void txtPasswordVerifiedKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPasswordVerifiedKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            btnRegistrarse.doClick();
+        }
+    }//GEN-LAST:event_txtPasswordVerifiedKeyPressed
 
     /**
      * @param args the command line arguments

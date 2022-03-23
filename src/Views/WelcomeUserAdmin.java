@@ -9,6 +9,7 @@ package Views;
  * @author euris
  */
 import Views.Constants.Constants.Colors;
+import javax.swing.ImageIcon;
 public class WelcomeUserAdmin extends javax.swing.JFrame {
 
     /**
@@ -18,6 +19,7 @@ public class WelcomeUserAdmin extends javax.swing.JFrame {
         initComponents();
         setResizable(false);
         setLocationRelativeTo(null);
+        setIconImage(new ImageIcon(getClass().getResource("/Icons/User.png")).getImage());
         setTitle("Bienvenido usuario administrador");
         jPanel1.setBackground(Colors.LIGHT_BLUE);
         jLabel1.setForeground(Colors.DARK_BLUE);
