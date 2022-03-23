@@ -286,6 +286,7 @@ public class Registro extends javax.swing.JFrame {
         
         if (formIsValid()) {
             if (password.equals(passwordVerified)) {
+                Login login = new Login();
                 String passwordEncrypted = Utils.encode(password);
                 
                 if (Utils.isFirstUser()) {
@@ -304,6 +305,8 @@ public class Registro extends javax.swing.JFrame {
                 
                 JOptionPane.showMessageDialog(null, "Usuario registrado con éxito", "Success", JOptionPane.INFORMATION_MESSAGE);
                 clearForm();
+                login.setVisible(true);
+                dispose();
             } else {
                 JOptionPane.showMessageDialog(null, "Las contraseñas no coinciden", "Error", JOptionPane.ERROR_MESSAGE);
             }
