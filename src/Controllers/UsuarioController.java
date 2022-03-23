@@ -63,7 +63,29 @@ public class UsuarioController implements IUsuarioController {
 
     @Override
     public Usuario getById(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Connection connection = dbContext.connect();
+        String sql = "SELECT * FROM \"user\" WHERE id=" + id;
+        Usuario usuario = new Usuario();
+        
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(sql);
+            
+            if (result.next()) {
+                usuario.setId(result.getInt("id"));
+                usuario.setIdRole(result.getInt("id_role"));
+                usuario.setIdGender(result.getInt("id_gender"));
+                usuario.setName(result.getString("name"));
+                usuario.setLastName(result.getString("last_name"));
+                usuario.setUsername(result.getString("username"));
+                usuario.setEmail(result.getString("email"));
+                usuario.setPassword(result.getString("password"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UsuarioController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return usuario;
     }
 
     @Override
@@ -110,6 +132,8 @@ public class UsuarioController implements IUsuarioController {
                 String passwordDesencrypted = Utils.decode(passwordEncrypted);
                 
                 if (password.equals(passwordDesencrypted)) {
+                    Usuario currentUser = this.getById(result.getInt("id"));
+                    response.setCurrentUser(currentUser);
                     response.setIsAuth(true);
                 } else {
                     response.setMessage("Contraseña incorrecta");

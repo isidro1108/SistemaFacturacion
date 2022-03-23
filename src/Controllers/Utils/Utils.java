@@ -26,6 +26,7 @@ import org.apache.commons.codec.binary.Base64;
  */
 public class Utils {
     private static char echoChar;
+    private static Usuario currentUser;
     
 //    Private methods
     private static SecretKeySpec getSecretKeySpec() {
@@ -41,6 +42,14 @@ public class Utils {
     }
     
 //    Public methods
+    public static Usuario getCurrentUser() {
+        return currentUser;
+    }
+
+    public static void setCurrentUser(Usuario currentUser) {
+        Utils.currentUser = currentUser;
+    }
+    
     public static boolean isFirstUser() {
         UsuarioController usuarioController = new UsuarioController();
         List<Usuario> usuarios = usuarioController.getAll();

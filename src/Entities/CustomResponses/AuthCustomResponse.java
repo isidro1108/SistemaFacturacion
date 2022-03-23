@@ -4,12 +4,15 @@
  */
 package Entities.CustomResponses;
 
+import Entities.Usuario;
+
 /**
  *
  * @author euris
  */
 public class AuthCustomResponse {
     private boolean isAuth;
+    private Usuario currentUser;
     private String message;
     private String title;
     private int messageType;
@@ -20,6 +23,14 @@ public class AuthCustomResponse {
 
     public void setIsAuth(boolean isAuth) {
         this.isAuth = isAuth;
+    }
+    
+    public Usuario getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(Usuario currentUser) {
+        this.currentUser = currentUser;
     }
 
     public String getMessage() {

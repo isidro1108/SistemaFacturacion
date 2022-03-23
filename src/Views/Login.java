@@ -27,7 +27,7 @@ public class Login extends javax.swing.JFrame {
         
         initComponents();
         setResizable(false);
-        setIconImage(new ImageIcon(getClass().getResource("/Icons/User.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/Images/Icons/User.png")).getImage());
         setTitle("Iniciar Sesión");
         jPanel1.setBackground(Constants.Colors.LIGHT_BLUE);
         jLabel1.setForeground(Constants.Colors.DARK_BLUE); 
@@ -160,6 +160,7 @@ public class Login extends javax.swing.JFrame {
         AuthCustomResponse response = this.usuarioController.auth(username, password);
         
         if (response.isAuth()) {
+            Utils.setCurrentUser(response.getCurrentUser());
             MainMenu mainMenu = new MainMenu();
             mainMenu.setVisible(true);
             dispose();
