@@ -305,7 +305,7 @@ public class Registro extends javax.swing.JFrame {
                 String passwordEncrypted = Utils.encode(password);
                 
                 if (Utils.isFirstUser()) {
-                    GenericEntity role = this.roleController.getByName("admin");
+                    GenericEntity role = this.roleController.getByName("Admin");
                     usuario.setIdRole(role.getId());
                 }
 
