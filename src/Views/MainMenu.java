@@ -183,6 +183,11 @@ public class MainMenu extends javax.swing.JFrame {
         btnArticulos.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         btnArticulos.setForeground(new java.awt.Color(255, 255, 255));
         btnArticulos.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnArticulos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnArticulosActionPerformed(evt);
+            }
+        });
 
         btnClientes.setBackground(new java.awt.Color(0, 0, 255));
         btnClientes.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
@@ -314,6 +319,11 @@ public class MainMenu extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         System.exit(0);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void btnArticulosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnArticulosActionPerformed
+        RegistroArticulos registroArticulos = new RegistroArticulos();
+        registroArticulos.setVisible(true);
+    }//GEN-LAST:event_btnArticulosActionPerformed
 
     /**
      * @param args the command line arguments
