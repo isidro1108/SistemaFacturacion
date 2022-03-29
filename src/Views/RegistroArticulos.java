@@ -6,8 +6,13 @@ package Views;
 
 import Controllers.ArticuloController;
 import Entities.Articulo;
+import Entities.CustomResponses.FormStatus;
 import Views.Constants.Constants;
+import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -16,23 +21,27 @@ import javax.swing.table.DefaultTableModel;
  */
 public class RegistroArticulos extends javax.swing.JFrame {
     private final ArticuloController articuloController;
+    List<String> nameFields;
+    boolean isValidForm;
     /**
      * Creates new form RegistroArticulos
      */
     public RegistroArticulos() {
+        this.nameFields = new ArrayList<>();
         this.articuloController = new ArticuloController();
+        this.isValidForm = true;
         
         initComponents();
         setLocationRelativeTo(null);
         setResizable(false);
         setTitle("Artículos");
-        updateTable();
+        initTable();
         jPanel1.setBackground(Constants.Colors.LIGHT_BLUE);
         jPanel2.setBackground(Constants.Colors.DARK_BLUE);
         jLabel1.setForeground(Constants.Colors.DARK_BLUE);
     }
     
-    private void updateTable() {
+    private void initTable() {
         DefaultTableModel model = new DefaultTableModel();
         List<Articulo> articulos = articuloController.getAll();
                 
@@ -53,6 +62,22 @@ public class RegistroArticulos extends javax.swing.JFrame {
         jTableArticulos.setModel(model);
     }
     
+    private void updateTable(Articulo articulo) {
+        DefaultTableModel model = (DefaultTableModel) jTableArticulos.getModel();
+        
+        model.addRow(new Object[] {
+            articulo.getCode(),
+            articulo.getName(),
+            articulo.getDescription(),
+            articulo.getQuantity(),
+            articulo.getPurchasePrice(),
+            articulo.getSalePrice(),
+            articulo.getReorderPoint()
+        });
+        
+        jTableArticulos.setModel(model);
+    }
+    
     private void setColumns(DefaultTableModel model) {
         model.addColumn("Código");
         model.addColumn("Nombre");
@@ -61,6 +86,68 @@ public class RegistroArticulos extends javax.swing.JFrame {
         model.addColumn("Precio de compra");
         model.addColumn("Precio de venta");
         model.addColumn("Punto de reorden");
+    }
+    
+    
+    private FormStatus getFormStatus() {
+        
+        FormStatus status = new FormStatus();
+                
+        isNotEmptyField(txtCode);
+        isNotEmptyField(txtName);
+        isNotEmptyField(txtDescription);
+        isNotEmptyField(txtQuantity);
+        isNotEmptyField(txtPurchasePrice);
+        isNotEmptyField(txtSalePrice);
+        isNotEmptyField(txtReorderPoint);
+
+        status.setValid(isValidForm);
+        if (nameFields.size() == 1) {
+            status.setMessage("Debe llenar el campo " + nameFields.get(0));
+        } else if (nameFields.size() > 1) {
+            int i = 0;
+            String message = "Debe llenar los campos ";
+            for (String nameField : nameFields) {
+                String separator = i == nameFields.size() - 1 
+                        ? "." : i == nameFields.size() - 2
+                        ? " y " : ", ";
+                message+= "\"" + nameField + "\"" + separator;
+                i++;
+            }
+            status.setMessage(message);
+        }
+        return status;
+    }
+    
+    private boolean isNotEmptyField(JTextField jTextField) {
+        if ("".equals(jTextField.getText())) {
+            isValidForm = isValidForm && false;
+            nameFields.add(jTextField.getName());
+        }
+        return !"".equals(jTextField.getText());
+    }
+    
+    private boolean isNotEmptyField(JTextArea jTextArea) {
+        if ("".equals(jTextArea.getText())) {
+            isValidForm = isValidForm && false;
+            nameFields.add(jTextArea.getName());
+        }
+        return !"".equals(jTextArea.getText());
+    }
+    
+    private void clearForm() {
+        txtCode.setText("");
+        txtName.setText("");
+        txtDescription.setText("");
+        txtQuantity.setText("");
+        txtPurchasePrice.setText("");
+        txtSalePrice.setText("");
+        txtReorderPoint.setText("");
+    }
+    
+    private void resetFormStatus() {
+        isValidForm = true;
+        nameFields = new ArrayList<>();
     }
 
     /**
@@ -77,19 +164,21 @@ public class RegistroArticulos extends javax.swing.JFrame {
         jTableArticulos = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        txtCode = new javax.swing.JTextField();
+        txtName = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jTextField4 = new javax.swing.JTextField();
-        jTextField5 = new javax.swing.JTextField();
-        jTextField6 = new javax.swing.JTextField();
+        txtDescription = new javax.swing.JTextArea();
+        txtPurchasePrice = new javax.swing.JTextField();
+        txtSalePrice = new javax.swing.JTextField();
+        txtReorderPoint = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        txtQuantity = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
         btnAgregar = new javax.swing.JButton();
         btnSalir = new javax.swing.JButton();
         btnModificar = new javax.swing.JButton();
@@ -110,9 +199,20 @@ public class RegistroArticulos extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         jLabel1.setText("Registro de Artículos");
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
+        txtCode.setName("Código"); // NOI18N
+
+        txtName.setName("Nombre"); // NOI18N
+
+        txtDescription.setColumns(20);
+        txtDescription.setRows(5);
+        txtDescription.setName("Descripción"); // NOI18N
+        jScrollPane2.setViewportView(txtDescription);
+
+        txtPurchasePrice.setName("Precio de compra"); // NOI18N
+
+        txtSalePrice.setName("Precio de venta"); // NOI18N
+
+        txtReorderPoint.setName("Punto de reorden"); // NOI18N
 
         jLabel7.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
@@ -138,32 +238,45 @@ public class RegistroArticulos extends javax.swing.JFrame {
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Código:");
 
+        txtQuantity.setName("Cantidad"); // NOI18N
+
+        jLabel8.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel8.setText("Cantidad:");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(26, 26, 26)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(2, 2, 2)
-                        .addComponent(jLabel7)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel8)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField6))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel6))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane2)
-                            .addComponent(jTextField2)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField4)
-                            .addComponent(jTextField5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(txtQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(26, 26, 26)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(2, 2, 2)
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtReorderPoint))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel6))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jScrollPane2)
+                                    .addComponent(txtName)
+                                    .addComponent(txtCode, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtPurchasePrice)
+                                    .addComponent(txtSalePrice, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                 .addGap(43, 43, 43))
         );
         jPanel2Layout.setVerticalGroup(
@@ -172,28 +285,32 @@ public class RegistroArticulos extends javax.swing.JFrame {
                 .addGap(15, 15, 15)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtPurchasePrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSalePrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtReorderPoint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7))
                 .addContainerGap())
         );
@@ -202,6 +319,11 @@ public class RegistroArticulos extends javax.swing.JFrame {
         btnAgregar.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         btnAgregar.setForeground(new java.awt.Color(255, 255, 255));
         btnAgregar.setText("Agregar");
+        btnAgregar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarActionPerformed(evt);
+            }
+        });
 
         btnSalir.setBackground(new java.awt.Color(0, 0, 255));
         btnSalir.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
@@ -253,7 +375,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
                         .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
                         .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(btnModificar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -282,6 +404,36 @@ public class RegistroArticulos extends javax.swing.JFrame {
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
         dispose();
     }//GEN-LAST:event_btnSalirActionPerformed
+
+    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
+        FormStatus formStatus = getFormStatus();
+        if (formStatus.isValid()) {
+            Articulo articulo = new Articulo();
+        
+            articulo.setCode(txtCode.getText());
+            articulo.setName(txtName.getText());
+            articulo.setDescription(txtDescription.getText());
+            try {
+                articulo.setQuantity(Integer.parseInt(txtQuantity.getText()));
+                articulo.setReorderPoint(Integer.parseInt(txtReorderPoint.getText()));
+                try {
+                    articulo.setPurchasePrice(Float.parseFloat(txtPurchasePrice.getText()));
+                    articulo.setSalePrice(Float.parseFloat(txtSalePrice.getText()));
+                    articuloController.create(articulo);
+                    updateTable(articulo);
+                    clearForm();
+                    JOptionPane.showMessageDialog(null, "Artículo agregado con éxito", "Success", JOptionPane.INFORMATION_MESSAGE);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Debe insertar números enteros o decimales en los campos \"Precio de compra\" y \"Precio de venta\"", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Debe insertar números enteros en los campos \"Cantidad\" y \"Punto de reorden\"", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, formStatus.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+        resetFormStatus();
+    }//GEN-LAST:event_btnAgregarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -330,16 +482,18 @@ public class RegistroArticulos extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTableArticulos;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
+    private javax.swing.JTextField txtCode;
+    private javax.swing.JTextArea txtDescription;
+    private javax.swing.JTextField txtName;
+    private javax.swing.JTextField txtPurchasePrice;
+    private javax.swing.JTextField txtQuantity;
+    private javax.swing.JTextField txtReorderPoint;
+    private javax.swing.JTextField txtSalePrice;
     // End of variables declaration//GEN-END:variables
 }
