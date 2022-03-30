@@ -90,16 +90,15 @@ public class RegistroArticulos extends javax.swing.JFrame {
     
     
     private FormStatus getFormStatus() {
-        
         FormStatus status = new FormStatus();
                 
-        isNotEmptyField(txtCode);
-        isNotEmptyField(txtName);
-        isNotEmptyField(txtDescription);
-        isNotEmptyField(txtQuantity);
-        isNotEmptyField(txtPurchasePrice);
-        isNotEmptyField(txtSalePrice);
-        isNotEmptyField(txtReorderPoint);
+        validateField(txtCode);
+        validateField(txtName);
+        validateField(txtDescription);
+        validateField(txtQuantity);
+        validateField(txtPurchasePrice);
+        validateField(txtSalePrice);
+        validateField(txtReorderPoint);
 
         status.setValid(isValidForm);
         if (nameFields.size() == 1) {
@@ -119,20 +118,18 @@ public class RegistroArticulos extends javax.swing.JFrame {
         return status;
     }
     
-    private boolean isNotEmptyField(JTextField jTextField) {
+    private void validateField(JTextField jTextField) {
         if ("".equals(jTextField.getText())) {
             isValidForm = isValidForm && false;
             nameFields.add(jTextField.getName());
         }
-        return !"".equals(jTextField.getText());
     }
     
-    private boolean isNotEmptyField(JTextArea jTextArea) {
+    private void validateField(JTextArea jTextArea) {
         if ("".equals(jTextArea.getText())) {
             isValidForm = isValidForm && false;
             nameFields.add(jTextArea.getName());
         }
-        return !"".equals(jTextArea.getText());
     }
     
     private void clearForm() {
