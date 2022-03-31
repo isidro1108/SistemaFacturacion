@@ -8,7 +8,6 @@ import Controllers.ArticuloController;
 import Entities.Articulo;
 import Entities.CustomResponses.FormStatus;
 import Views.Constants.Constants;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
@@ -21,15 +20,14 @@ import javax.swing.table.DefaultTableModel;
  */
 public class RegistroArticulos extends javax.swing.JFrame {
     private final ArticuloController articuloController;
-    List<String> nameFields;
-    boolean isValidForm;
+    private final FormStatus formStatus;
+    
     /**
      * Creates new form RegistroArticulos
      */
     public RegistroArticulos() {
-        this.nameFields = new ArrayList<>();
         this.articuloController = new ArticuloController();
-        this.isValidForm = true;
+        this.formStatus = new FormStatus();
         
         initComponents();
         setLocationRelativeTo(null);
@@ -89,46 +87,45 @@ public class RegistroArticulos extends javax.swing.JFrame {
     }
     
     
-    private FormStatus getFormStatus() {
-        FormStatus status = new FormStatus();
-                
-        validateField(txtCode);
-        validateField(txtName);
-        validateField(txtDescription);
-        validateField(txtQuantity);
-        validateField(txtPurchasePrice);
-        validateField(txtSalePrice);
-        validateField(txtReorderPoint);
-
-        status.setValid(isValidForm);
-        if (nameFields.size() == 1) {
-            status.setMessage("Debe llenar el campo " + nameFields.get(0));
-        } else if (nameFields.size() > 1) {
+    private void setFormStatus() {               
+        Object[] fields = new Object[] { txtCode, txtName, txtDescription, txtQuantity, txtPurchasePrice, txtSalePrice, txtReorderPoint }; 
+        
+        for (Object field : fields) {
+            try {
+                validateField((JTextField)field);
+            } catch (Exception ex) {
+                validateField((JTextArea)field);
+            }
+        }
+        
+        List<String> nameInvalidFields = formStatus.getNameInvalidFields();
+        if (nameInvalidFields.size() == 1) {
+            formStatus.setMessage("Debe llenar el campo " + nameInvalidFields.get(0));
+        } else if (formStatus.getNameInvalidFields().size() > 1) {
             int i = 0;
             String message = "Debe llenar los campos ";
-            for (String nameField : nameFields) {
-                String separator = i == nameFields.size() - 1 
-                        ? "." : i == nameFields.size() - 2
+            for (String nameInvalidField : nameInvalidFields) {
+                String separator = i == nameInvalidFields.size() - 1 
+                        ? "." : i == nameInvalidFields.size() - 2
                         ? " y " : ", ";
-                message+= "\"" + nameField + "\"" + separator;
+                message+= "\"" + nameInvalidField + "\"" + separator;
                 i++;
             }
-            status.setMessage(message);
+            formStatus.setMessage(message);
         }
-        return status;
     }
     
     private void validateField(JTextField jTextField) {
         if ("".equals(jTextField.getText())) {
-            isValidForm = isValidForm && false;
-            nameFields.add(jTextField.getName());
+            formStatus.setValid(formStatus.isValid() && false);
+            formStatus.addNameInvalidField(jTextField.getName());
         }
     }
     
     private void validateField(JTextArea jTextArea) {
         if ("".equals(jTextArea.getText())) {
-            isValidForm = isValidForm && false;
-            nameFields.add(jTextArea.getName());
+            formStatus.setValid(formStatus.isValid() && false);
+            formStatus.addNameInvalidField(jTextArea.getName());
         }
     }
     
@@ -140,11 +137,6 @@ public class RegistroArticulos extends javax.swing.JFrame {
         txtPurchasePrice.setText("");
         txtSalePrice.setText("");
         txtReorderPoint.setText("");
-    }
-    
-    private void resetFormStatus() {
-        isValidForm = true;
-        nameFields = new ArrayList<>();
     }
 
     /**
@@ -403,7 +395,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSalirActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
-        FormStatus formStatus = getFormStatus();
+        setFormStatus();
         if (formStatus.isValid()) {
             Articulo articulo = new Articulo();
         
@@ -429,7 +421,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(null, formStatus.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
         }
-        resetFormStatus();
+        formStatus.clearStatus();
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     /**

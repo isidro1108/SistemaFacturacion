@@ -4,14 +4,24 @@
  */
 package Entities.CustomResponses;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author euris
  */
 public class FormStatus {
     private boolean valid;
+    private List<String> nameInvalidFields;
     private String message;
 
+    public FormStatus() {
+        this.valid = false;
+        this.nameInvalidFields = new ArrayList<>();
+        this.message = "";
+    }
+    
     public boolean isValid() {
         return valid;
     }
@@ -20,6 +30,18 @@ public class FormStatus {
         this.valid = valid;
     }
 
+    public List<String> getNameInvalidFields() {
+        return nameInvalidFields;
+    }
+
+    public void setNameInvalidFields(List<String> nameInvalidFields) {
+        this.nameInvalidFields = nameInvalidFields;
+    }
+    
+    public void addNameInvalidField(String name) {
+        this.nameInvalidFields.add(name);
+    }
+    
     public String getMessage() {
         return message;
     }
@@ -28,5 +50,9 @@ public class FormStatus {
         this.message = message;
     }
     
-    
+    public void clearStatus() {
+        this.valid = true;
+        this.nameInvalidFields = new ArrayList<>();
+        this.message = "";
+    }
 }
