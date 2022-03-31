@@ -42,24 +42,12 @@ public class RegistroArticulos extends javax.swing.JFrame {
     
     private void initTable() {
         DefaultTableModel model = new DefaultTableModel();
-        DecimalFormat customFormat = new DecimalFormat("#.00");
         List<Articulo> articulos = articuloController.getAll();
                 
         setColumns(model);
         
         articulos.forEach(articulo -> {
-            String purchasePrice = customFormat.format(articulo.getPurchasePrice());
-            String salePrice = customFormat.format(articulo.getSalePrice());
-            
-            model.addRow(new Object[] {
-                articulo.getCode(),
-                articulo.getName(),
-                articulo.getDescription(),
-                articulo.getQuantity(),
-                purchasePrice,
-                salePrice,
-                articulo.getReorderPoint()
-            });
+            addRowToTable(model, articulo);
         });
         
         jTableArticulos.setModel(model);
@@ -67,6 +55,12 @@ public class RegistroArticulos extends javax.swing.JFrame {
     
     private void updateTable(Articulo articulo) {
         DefaultTableModel model = (DefaultTableModel) jTableArticulos.getModel();
+        
+        addRowToTable(model, articulo);
+        jTableArticulos.setModel(model);
+    }
+    
+    private void addRowToTable(DefaultTableModel model, Articulo articulo) {
         DecimalFormat customFormat = new DecimalFormat("#.00");
         String purchasePrice = customFormat.format(articulo.getPurchasePrice());
         String salePrice = customFormat.format(articulo.getSalePrice());
@@ -80,8 +74,6 @@ public class RegistroArticulos extends javax.swing.JFrame {
             salePrice,
             articulo.getReorderPoint()
         });
-        
-        jTableArticulos.setModel(model);
     }
     
     private void setColumns(DefaultTableModel model) {
