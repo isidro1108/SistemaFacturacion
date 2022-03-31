@@ -8,6 +8,7 @@ import Controllers.ArticuloController;
 import Entities.Articulo;
 import Entities.CustomResponses.FormStatus;
 import Views.Constants.Constants;
+import java.text.DecimalFormat;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
@@ -41,18 +42,22 @@ public class RegistroArticulos extends javax.swing.JFrame {
     
     private void initTable() {
         DefaultTableModel model = new DefaultTableModel();
+        DecimalFormat customFormat = new DecimalFormat("#.00");
         List<Articulo> articulos = articuloController.getAll();
                 
         setColumns(model);
         
         articulos.forEach(articulo -> {
+            String purchasePrice = customFormat.format(articulo.getPurchasePrice());
+            String salePrice = customFormat.format(articulo.getSalePrice());
+            
             model.addRow(new Object[] {
                 articulo.getCode(),
                 articulo.getName(),
                 articulo.getDescription(),
                 articulo.getQuantity(),
-                articulo.getPurchasePrice(),
-                articulo.getSalePrice(),
+                purchasePrice,
+                salePrice,
                 articulo.getReorderPoint()
             });
         });
@@ -62,14 +67,17 @@ public class RegistroArticulos extends javax.swing.JFrame {
     
     private void updateTable(Articulo articulo) {
         DefaultTableModel model = (DefaultTableModel) jTableArticulos.getModel();
+        DecimalFormat customFormat = new DecimalFormat("#.00");
+        String purchasePrice = customFormat.format(articulo.getPurchasePrice());
+        String salePrice = customFormat.format(articulo.getSalePrice());
         
         model.addRow(new Object[] {
             articulo.getCode(),
             articulo.getName(),
             articulo.getDescription(),
             articulo.getQuantity(),
-            articulo.getPurchasePrice(),
-            articulo.getSalePrice(),
+            purchasePrice,
+            salePrice,
             articulo.getReorderPoint()
         });
         
