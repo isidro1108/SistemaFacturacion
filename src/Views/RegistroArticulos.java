@@ -9,6 +9,7 @@ import Entities.Articulo;
 import Entities.CustomResponses.FormStatus;
 import Views.Constants.Constants;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
@@ -22,6 +23,7 @@ import javax.swing.table.DefaultTableModel;
 public class RegistroArticulos extends javax.swing.JFrame {
     private final ArticuloController articuloController;
     private final FormStatus formStatus;
+    private final List<Integer> idsArticulos;
     
     /**
      * Creates new form RegistroArticulos
@@ -29,6 +31,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
     public RegistroArticulos() {
         this.articuloController = new ArticuloController();
         this.formStatus = new FormStatus();
+        this.idsArticulos = new ArrayList<>();
         
         initComponents();
         setLocationRelativeTo(null);
@@ -65,6 +68,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
         String purchasePrice = customFormat.format(articulo.getPurchasePrice());
         String salePrice = customFormat.format(articulo.getSalePrice());
         
+        idsArticulos.add(articulo.getId());
         model.addRow(new Object[] {
             articulo.getCode(),
             articulo.getName(),
@@ -117,14 +121,14 @@ public class RegistroArticulos extends javax.swing.JFrame {
     
     private void validateField(JTextField jTextField) {
         if ("".equals(jTextField.getText())) {
-            formStatus.setValid(formStatus.isValid() && false);
+            formStatus.setValid(false);
             formStatus.addNameInvalidField(jTextField.getName());
         }
     }
     
     private void validateField(JTextArea jTextArea) {
         if ("".equals(jTextArea.getText())) {
-            formStatus.setValid(formStatus.isValid() && false);
+            formStatus.setValid(false);
             formStatus.addNameInvalidField(jTextArea.getName());
         }
     }
@@ -333,6 +337,11 @@ public class RegistroArticulos extends javax.swing.JFrame {
         btnEliminar.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         btnEliminar.setForeground(new java.awt.Color(255, 255, 255));
         btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -423,6 +432,33 @@ public class RegistroArticulos extends javax.swing.JFrame {
         }
         formStatus.clearStatus();
     }//GEN-LAST:event_btnAgregarActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        int[] rowIndexes = jTableArticulos.getSelectedRows();
+        int length = rowIndexes.length;
+        int firstIndex = length > 0 ? rowIndexes[0] : 0;
+        String message = length == 0 ? "No hay artículos seleccionados"
+                : length == 1 ? "1 artículo eliminado"
+                : length + " artículos eliminados";
+        String confirmMessage = length == 1
+                ? "¿Desea eliminar el artículo?"
+                : "¿Desea eliminar los artículos?";
+        
+        int confirm = length > 0 ? JOptionPane.showConfirmDialog(null, confirmMessage) : -1; 
+        
+        if (confirm == 0) {
+            for (int i = 0; i < rowIndexes.length; i++) {
+                int idArticulo = idsArticulos.get(firstIndex);
+                DefaultTableModel model = (DefaultTableModel)jTableArticulos.getModel();
+
+                model.removeRow(firstIndex);
+                idsArticulos.remove(firstIndex);
+                articuloController.delete(idArticulo);
+            }
+        }
+        if (confirm == 0 || confirm == -1)
+            JOptionPane.showMessageDialog(null, message);
+    }//GEN-LAST:event_btnEliminarActionPerformed
 
     /**
      * @param args the command line arguments

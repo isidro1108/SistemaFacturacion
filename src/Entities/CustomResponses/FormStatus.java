@@ -17,7 +17,7 @@ public class FormStatus {
     private String message;
 
     public FormStatus() {
-        this.valid = false;
+        this.valid = true;
         this.nameInvalidFields = new ArrayList<>();
         this.message = "";
     }
