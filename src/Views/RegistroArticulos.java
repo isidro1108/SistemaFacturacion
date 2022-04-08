@@ -103,14 +103,15 @@ public class RegistroArticulos extends javax.swing.JFrame {
         }
         
         List<String> nameInvalidFields = formStatus.getNameInvalidFields();
-        if (nameInvalidFields.size() == 1) {
+        int size = nameInvalidFields.size();
+        if (size == 1) {
             formStatus.setMessage("Debe llenar el campo " + nameInvalidFields.get(0));
-        } else if (formStatus.getNameInvalidFields().size() > 1) {
+        } else if (size > 1) {
             int i = 0;
             String message = "Debe llenar los campos ";
             for (String nameInvalidField : nameInvalidFields) {
-                String separator = i == nameInvalidFields.size() - 1 
-                        ? "." : i == nameInvalidFields.size() - 2
+                String separator = i == size - 1 
+                        ? "." : i == size - 2
                         ? " y " : ", ";
                 message+= "\"" + nameInvalidField + "\"" + separator;
                 i++;
@@ -121,14 +122,14 @@ public class RegistroArticulos extends javax.swing.JFrame {
     
     private void validateField(JTextField jTextField) {
         if ("".equals(jTextField.getText())) {
-            formStatus.setValid(false);
+            if (formStatus.isValid()) formStatus.setValid(false);
             formStatus.addNameInvalidField(jTextField.getName());
         }
     }
     
     private void validateField(JTextArea jTextArea) {
         if ("".equals(jTextArea.getText())) {
-            formStatus.setValid(false);
+            if (formStatus.isValid()) formStatus.setValid(false);
             formStatus.addNameInvalidField(jTextArea.getName());
         }
     }

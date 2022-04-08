@@ -15,8 +15,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -55,7 +53,7 @@ public class UsuarioController implements IUsuarioController {
                 usuarios.add(usuario);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(UsuarioController.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
         
         return usuarios;
@@ -80,9 +78,11 @@ public class UsuarioController implements IUsuarioController {
                 usuario.setUsername(result.getString("username"));
                 usuario.setEmail(result.getString("email"));
                 usuario.setPassword(result.getString("password"));
+            } else {
+                JOptionPane.showMessageDialog(null, "Este usuario no existe", "Warning", JOptionPane.WARNING_MESSAGE);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(UsuarioController.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
         
         return usuario;
@@ -104,18 +104,42 @@ public class UsuarioController implements IUsuarioController {
             Statement statement = connection.createStatement();
             statement.execute(sql);
         } catch (SQLException ex) {
-            Logger.getLogger(UsuarioController.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     @Override
     public void update(Usuario usuario) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Connection connection = dbContext.connect();
+        String passwordEncrypted = Utils.encode(usuario.getPassword());
+        try {
+            Statement statement = connection.createStatement();
+            String sql = "UPDATE \"user\" SET "
+                    + "id_role=" + usuario.getIdRole() + ", "
+                    + "id_gender=" + usuario.getIdGender() + ", "
+                    + "name='" + usuario.getName() + "', "
+                    + "last_name='" + usuario.getLastName() + "', "
+                    + "username='" + usuario.getUsername() + "', "
+                    + "email='" + usuario.getEmail() + "', "
+                    + "password='" + passwordEncrypted + "' "
+                    + "WHERE id=" + usuario.getId();
+            
+            statement.execute(sql);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     @Override
     public void delete(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Connection connection = dbContext.connect();
+        try {
+            Statement statement = connection.createStatement();
+            String sql = "DELETE FROM \"user\" WHERE id=" + id;
+            statement.execute(sql);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
     
     @Override
