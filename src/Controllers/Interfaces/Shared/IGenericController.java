@@ -18,10 +18,9 @@ public interface IGenericController<T> extends IBaseGenericController<T> {
 
     /**
      *
-     * @param id
      * @param entity
      */
-    void update(int id, T entity);
+    void update(T entity);
 
     /**
      *

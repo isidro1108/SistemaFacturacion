@@ -47,27 +47,23 @@ public class ArticuloController implements IArticuloController<Articulo> {
     }
 
     @Override
-    public void update(int id, Articulo entity) {
-        if (id == entity.getId()) {
-            Connection connection = dbContext.connect();
-            try {
-                Statement statement = connection.createStatement();
-                String sql = "UPDATE item SET "
-                        + "code='" + entity.getCode() + "', "
-                        + "name='" + entity.getName() + "', "
-                        + "description='" + entity.getDescription() + "', "
-                        + "quantity=" + entity.getQuantity() + ", "
-                        + "purchase_price=" + entity.getPurchasePrice() + ", "
-                        + "sale_price=" + entity.getSalePrice() + ", "
-                        + "reorder_point=" + entity.getReorderPoint()
-                        + " WHERE id=" + id;
-                
-                statement.execute(sql);
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } else {
-            JOptionPane.showMessageDialog(null, "El id no corresponde al artículo", "Warning", JOptionPane.WARNING_MESSAGE);
+    public void update(Articulo entity) {
+        Connection connection = dbContext.connect();
+        try {
+            Statement statement = connection.createStatement();
+            String sql = "UPDATE item SET "
+                    + "code='" + entity.getCode() + "', "
+                    + "name='" + entity.getName() + "', "
+                    + "description='" + entity.getDescription() + "', "
+                    + "quantity=" + entity.getQuantity() + ", "
+                    + "purchase_price=" + entity.getPurchasePrice() + ", "
+                    + "sale_price=" + entity.getSalePrice() + ", "
+                    + "reorder_point=" + entity.getReorderPoint()
+                    + " WHERE id=" + entity.getId();
+
+            statement.execute(sql);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

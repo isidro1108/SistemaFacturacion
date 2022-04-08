@@ -109,7 +109,7 @@ public class UsuarioController implements IUsuarioController {
     }
 
     @Override
-    public void update(int id, Usuario usuario) {
+    public void update(Usuario usuario) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
