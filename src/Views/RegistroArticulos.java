@@ -44,7 +44,12 @@ public class RegistroArticulos extends javax.swing.JFrame {
     }
     
     private void initTable() {
-        DefaultTableModel model = new DefaultTableModel();
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         List<Articulo> articulos = articuloController.getAll();
                 
         setColumns(model);
