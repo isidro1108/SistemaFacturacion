@@ -24,6 +24,9 @@ public class RegistroArticulos extends javax.swing.JFrame {
     private final ArticuloController articuloController;
     private final FormStatus formStatus;
     private final List<Integer> idsArticulos;
+    private Articulo articulo;
+    private int idToAdd;
+    private int indexRowToModify;
     
     /**
      * Creates new form RegistroArticulos
@@ -32,6 +35,9 @@ public class RegistroArticulos extends javax.swing.JFrame {
         this.articuloController = new ArticuloController();
         this.formStatus = new FormStatus();
         this.idsArticulos = new ArrayList<>();
+        this.articulo = new Articulo();
+        this.idToAdd = 0;
+        this.indexRowToModify = -1;
         
         initComponents();
         setLocationRelativeTo(null);
@@ -41,6 +47,8 @@ public class RegistroArticulos extends javax.swing.JFrame {
         jPanel1.setBackground(Constants.Colors.LIGHT_BLUE);
         jPanel2.setBackground(Constants.Colors.DARK_BLUE);
         jLabel1.setForeground(Constants.Colors.DARK_BLUE);
+        btnGuardarCambios.setVisible(false);
+        btnCancelar.setVisible(false);
     }
     
     private void initTable() {
@@ -51,29 +59,47 @@ public class RegistroArticulos extends javax.swing.JFrame {
             }
         };
         List<Articulo> articulos = articuloController.getAll();
-                
         setColumns(model);
-        
-        articulos.forEach(articulo -> {
-            addRowToTable(model, articulo);
+        articulos.forEach(art -> {
+            addRowToTable(model, art);
         });
-        
         jTableArticulos.setModel(model);
     }
     
     private void updateTable(Articulo articulo) {
-        DefaultTableModel model = (DefaultTableModel) jTableArticulos.getModel();
+        if (articulo.getId() > 0) {
+            updateRow(articulo);
+        } else {
+            DefaultTableModel model = (DefaultTableModel) jTableArticulos.getModel();
+            addRowToTable(model, articulo);
+            jTableArticulos.setModel(model);
+        }
+    }
+    
+    private void updateRow(Articulo articulo) {
+        DecimalFormat customFormat = new DecimalFormat("#.00");
+        String purchasePrice = customFormat.format(articulo.getPurchasePrice());
+        String salePrice = customFormat.format(articulo.getSalePrice());
+        Object[] articuloData = new Object[] {
+            articulo.getCode(),
+            articulo.getName(),
+            articulo.getDescription(),
+            articulo.getQuantity(),
+            purchasePrice,
+            salePrice,
+            articulo.getReorderPoint()
+        };
         
-        addRowToTable(model, articulo);
-        jTableArticulos.setModel(model);
+        for (int i = 0; i < articuloData.length; i++)
+            jTableArticulos.setValueAt(articuloData[i], indexRowToModify, i);
     }
     
     private void addRowToTable(DefaultTableModel model, Articulo articulo) {
         DecimalFormat customFormat = new DecimalFormat("#.00");
         String purchasePrice = customFormat.format(articulo.getPurchasePrice());
         String salePrice = customFormat.format(articulo.getSalePrice());
-        
-        idsArticulos.add(articulo.getId());
+        int id = articulo.getId();
+        idsArticulos.add(id > 0 ? id : this.idToAdd);
         model.addRow(new Object[] {
             articulo.getCode(),
             articulo.getName(),
@@ -148,6 +174,44 @@ public class RegistroArticulos extends javax.swing.JFrame {
         txtSalePrice.setText("");
         txtReorderPoint.setText("");
     }
+    
+    private void toggleButtons(boolean inEdition) {
+        btnAgregar.setEnabled(!inEdition);
+        btnModificar.setEnabled(!inEdition);
+        btnEliminar.setEnabled(!inEdition);
+        btnSalir.setEnabled(!inEdition);
+        btnGuardarCambios.setVisible(inEdition);
+        btnCancelar.setVisible(inEdition);
+    }
+    
+    private void saveOrUpdateArticulo() {
+        setFormStatus();
+        if (formStatus.isValid()) {        
+            articulo.setCode(txtCode.getText());
+            articulo.setName(txtName.getText());
+            articulo.setDescription(txtDescription.getText());
+            try {
+                articulo.setQuantity(Integer.parseInt(txtQuantity.getText()));
+                articulo.setReorderPoint(Integer.parseInt(txtReorderPoint.getText()));
+                try {
+                    articulo.setPurchasePrice(Float.parseFloat(txtPurchasePrice.getText()));
+                    articulo.setSalePrice(Float.parseFloat(txtSalePrice.getText()));
+                    if (articulo.getId() > 0) articuloController.update(articulo);
+                    else this.idToAdd =  articuloController.create(articulo);
+                    updateTable(articulo);
+                    clearForm();
+                    JOptionPane.showMessageDialog(null, "Artículo " + (articulo.getId() > 0 ? "modificado" : "agregado") + " con éxito", "Success", JOptionPane.INFORMATION_MESSAGE);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Debe insertar números enteros o decimales en los campos \"Precio de compra\" y \"Precio de venta\"", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Debe insertar números enteros en los campos \"Cantidad\" y \"Punto de reorden\"", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, formStatus.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+        formStatus.clearStatus();
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -182,6 +246,8 @@ public class RegistroArticulos extends javax.swing.JFrame {
         btnSalir = new javax.swing.JButton();
         btnModificar = new javax.swing.JButton();
         btnEliminar = new javax.swing.JButton();
+        btnGuardarCambios = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -248,34 +314,29 @@ public class RegistroArticulos extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel8)
+                        .addGap(28, 28, 28)
+                        .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(txtReorderPoint))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addGap(26, 26, 26)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(2, 2, 2)
-                                .addComponent(jLabel7)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtReorderPoint))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel3)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jLabel6))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jScrollPane2)
-                                    .addComponent(txtName)
-                                    .addComponent(txtCode, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtPurchasePrice)
-                                    .addComponent(txtSalePrice, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel6))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtQuantity)
+                            .addComponent(jScrollPane2)
+                            .addComponent(txtName)
+                            .addComponent(txtPurchasePrice)
+                            .addComponent(txtSalePrice, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtCode))))
                 .addGap(43, 43, 43))
         );
         jPanel2Layout.setVerticalGroup(
@@ -338,6 +399,11 @@ public class RegistroArticulos extends javax.swing.JFrame {
         btnModificar.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         btnModificar.setForeground(new java.awt.Color(255, 255, 255));
         btnModificar.setText("Modificar");
+        btnModificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnModificarActionPerformed(evt);
+            }
+        });
 
         btnEliminar.setBackground(new java.awt.Color(0, 0, 255));
         btnEliminar.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
@@ -346,6 +412,26 @@ public class RegistroArticulos extends javax.swing.JFrame {
         btnEliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEliminarActionPerformed(evt);
+            }
+        });
+
+        btnGuardarCambios.setBackground(new java.awt.Color(0, 0, 255));
+        btnGuardarCambios.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        btnGuardarCambios.setForeground(new java.awt.Color(255, 255, 255));
+        btnGuardarCambios.setText("Guardar Cambios");
+        btnGuardarCambios.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarCambiosActionPerformed(evt);
+            }
+        });
+
+        btnCancelar.setBackground(new java.awt.Color(0, 0, 255));
+        btnCancelar.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        btnCancelar.setForeground(new java.awt.Color(255, 255, 255));
+        btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
             }
         });
 
@@ -364,8 +450,12 @@ public class RegistroArticulos extends javax.swing.JFrame {
                             .addComponent(btnModificar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnAgregar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnEliminar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(472, Short.MAX_VALUE))
+                            .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnGuardarCambios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnCancelar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap(330, Short.MAX_VALUE))
             .addComponent(jScrollPane1)
         );
         jPanel1Layout.setVerticalGroup(
@@ -382,9 +472,15 @@ public class RegistroArticulos extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
                         .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btnModificar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(btnModificar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(btnGuardarCambios, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
                         .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(39, 39, 39)))
@@ -410,33 +506,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSalirActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
-        setFormStatus();
-        if (formStatus.isValid()) {
-            Articulo articulo = new Articulo();
-        
-            articulo.setCode(txtCode.getText());
-            articulo.setName(txtName.getText());
-            articulo.setDescription(txtDescription.getText());
-            try {
-                articulo.setQuantity(Integer.parseInt(txtQuantity.getText()));
-                articulo.setReorderPoint(Integer.parseInt(txtReorderPoint.getText()));
-                try {
-                    articulo.setPurchasePrice(Float.parseFloat(txtPurchasePrice.getText()));
-                    articulo.setSalePrice(Float.parseFloat(txtSalePrice.getText()));
-                    articuloController.create(articulo);
-                    updateTable(articulo);
-                    clearForm();
-                    JOptionPane.showMessageDialog(null, "Artículo agregado con éxito", "Success", JOptionPane.INFORMATION_MESSAGE);
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(null, "Debe insertar números enteros o decimales en los campos \"Precio de compra\" y \"Precio de venta\"", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, "Debe insertar números enteros en los campos \"Cantidad\" y \"Punto de reorden\"", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } else {
-            JOptionPane.showMessageDialog(null, formStatus.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
-        }
-        formStatus.clearStatus();
+        saveOrUpdateArticulo();
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
@@ -447,10 +517,11 @@ public class RegistroArticulos extends javax.swing.JFrame {
                 : length == 1 ? "1 artículo eliminado"
                 : length + " artículos eliminados";
         String confirmMessage = length == 1
-                ? "¿Desea eliminar el artículo?"
-                : "¿Desea eliminar los artículos?";
+                ? "¿Desea eliminar el artículo seleccionado?"
+                : "¿Desea eliminar los artículos seleccionados?";
         
-        int confirm = length > 0 ? JOptionPane.showConfirmDialog(null, confirmMessage) : -1; 
+        int confirm = length > 0 
+                ? JOptionPane.showConfirmDialog(null, confirmMessage, "Seleccione una opción", JOptionPane.YES_NO_OPTION) : -1; 
         
         if (confirm == 0) {
             for (int i = 0; i < rowIndexes.length; i++) {
@@ -465,6 +536,43 @@ public class RegistroArticulos extends javax.swing.JFrame {
         if (confirm == 0 || confirm == -1)
             JOptionPane.showMessageDialog(null, message);
     }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
+        int[] indexes = jTableArticulos.getSelectedRows();
+        int length = indexes.length;
+        if (length == 1) {
+            this.indexRowToModify = indexes[0];
+            int idArticulo = this.idsArticulos.get(indexRowToModify);
+            this.articulo = this.articuloController.getById(idArticulo);
+            
+            txtCode.setText(articulo.getCode());
+            txtName.setText(articulo.getName());
+            txtDescription.setText(articulo.getDescription());
+            txtQuantity.setText(String.valueOf(articulo.getQuantity()));
+            txtPurchasePrice.setText(String.valueOf(articulo.getPurchasePrice()));
+            txtSalePrice.setText(String.valueOf(articulo.getSalePrice()));
+            txtReorderPoint.setText(String.valueOf(articulo.getReorderPoint()));
+            toggleButtons(true);
+        } else {
+            String message = length == 0 
+                    ? "No hay ningún artículo seleccionado"
+                    : "Solo se puede seleccionar un solo artículo para modificarlo";
+            
+            JOptionPane.showMessageDialog(null, message);
+        }
+    }//GEN-LAST:event_btnModificarActionPerformed
+
+    private void btnGuardarCambiosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarCambiosActionPerformed
+        saveOrUpdateArticulo();
+        toggleButtons(false);
+        this.articulo = new Articulo();
+    }//GEN-LAST:event_btnGuardarCambiosActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        toggleButtons(false);
+        this.articulo = new Articulo();
+        clearForm();
+    }//GEN-LAST:event_btnCancelarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -503,7 +611,9 @@ public class RegistroArticulos extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregar;
+    private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnEliminar;
+    private javax.swing.JButton btnGuardarCambios;
     private javax.swing.JButton btnModificar;
     private javax.swing.JButton btnSalir;
     private javax.swing.JLabel jLabel1;
