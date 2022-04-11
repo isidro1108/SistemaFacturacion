@@ -89,8 +89,9 @@ public class UsuarioController implements IUsuarioController {
     }
 
     @Override
-    public void create(Usuario usuario) {
+    public int create(Usuario usuario) {
         Connection connection = dbContext.connect();
+        int idUser = 0;
         String sql = "INSERT INTO \"user\" (id_role, id_gender, name, last_name, username, email, password)"
                 + "VALUES ('"+ usuario.getIdRole() +"', "
                 + "'"+ usuario.getIdGender() +"', "
@@ -98,14 +99,18 @@ public class UsuarioController implements IUsuarioController {
                 + "'"+ usuario.getLastName() +"', "
                 + "'"+ usuario.getUsername() +"', "
                 + "'"+ usuario.getEmail() +"', "
-                + "'"+ usuario.getPassword() +"')";
+                + "'"+ usuario.getPassword() +"') RETURNING id";
         
         try {
             Statement statement = connection.createStatement();
-            statement.execute(sql);
+            ResultSet result = statement.executeQuery(sql);
+            
+            if (result.next())
+                idUser = result.getInt("id");
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
+        return idUser;
     }
 
     @Override

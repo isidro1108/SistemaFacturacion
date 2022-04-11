@@ -27,23 +27,28 @@ public class ArticuloController implements IArticuloController<Articulo> {
     }
     
     @Override
-    public void create(Articulo entity) {
+    public int create(Articulo entity) {
         Connection connection = dbContext.connect();
+        int idArticulo = 0;
         try {
             Statement statement = connection.createStatement();
             String sql = "INSERT INTO item (code, name, description, quantity, purchase_price, sale_price, reorder_point)"
-                    + "VALUES ('"+ entity.getCode() +"', "
-                    + "'"+ entity.getName() +"', "
-                    + "'"+ entity.getDescription() +"', "
+                    + "VALUES ('"+ entity.getCode() + "', "
+                    + "'"+ entity.getName() + "', "
+                    + "'"+ entity.getDescription() + "', "
                     + entity.getQuantity() + ", "
                     + entity.getPurchasePrice() + ", "
                     + entity.getSalePrice() + ", "
-                    + entity.getReorderPoint() + ")";
+                    + entity.getReorderPoint() + ") RETURNING id";
             
-            statement.execute(sql);
+            ResultSet result = statement.executeQuery(sql);
+            
+            if (result.next())
+                idArticulo = result.getInt("id");
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
+        return idArticulo;
     }
 
     @Override

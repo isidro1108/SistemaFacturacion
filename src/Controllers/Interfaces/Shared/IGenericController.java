@@ -13,8 +13,9 @@ public interface IGenericController<T> extends IBaseGenericController<T> {
     /**
      *
      * @param entity
+     * @return 
      */
-    void create(T entity);
+    int create(T entity);
 
     /**
      *
