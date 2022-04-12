@@ -32,8 +32,8 @@ public class UsuarioController implements IUsuarioController {
     public List<Usuario> getAll() {
         Connection connection = dbContext.connect();
         List<Usuario> usuarios = new ArrayList<>();
-        
         String sql = "SELECT * FROM \"user\" ORDER BY id ASC";
+        
         try {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(sql);
@@ -49,13 +49,11 @@ public class UsuarioController implements IUsuarioController {
                 usuario.setUsername(result.getString("username"));
                 usuario.setEmail(result.getString("email"));
                 usuario.setPassword(result.getString("password"));
-                
                 usuarios.add(usuario);
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
         return usuarios;
     }
 
@@ -91,7 +89,6 @@ public class UsuarioController implements IUsuarioController {
     @Override
     public int create(Usuario usuario) {
         Connection connection = dbContext.connect();
-        int idUser = 0;
         String sql = "INSERT INTO \"user\" (id_role, id_gender, name, last_name, username, email, password)"
                 + "VALUES ('"+ usuario.getIdRole() +"', "
                 + "'"+ usuario.getIdGender() +"', "
@@ -100,13 +97,13 @@ public class UsuarioController implements IUsuarioController {
                 + "'"+ usuario.getUsername() +"', "
                 + "'"+ usuario.getEmail() +"', "
                 + "'"+ usuario.getPassword() +"') RETURNING id";
+        int idUser = 0;
         
         try {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(sql);
             
-            if (result.next())
-                idUser = result.getInt("id");
+            if (result.next()) idUser = result.getInt("id");
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -117,6 +114,7 @@ public class UsuarioController implements IUsuarioController {
     public void update(Usuario usuario) {
         Connection connection = dbContext.connect();
         String passwordEncrypted = Utils.encode(usuario.getPassword());
+        
         try {
             Statement statement = connection.createStatement();
             String sql = "UPDATE \"user\" SET "
@@ -151,8 +149,8 @@ public class UsuarioController implements IUsuarioController {
     public AuthCustomResponse auth(String username, String password) {
         Connection connection = dbContext.connect();        
         String sql = "SELECT * FROM \"user\" WHERE username='" + username + "'";
-        
         AuthCustomResponse response = new AuthCustomResponse();
+        
         try {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(sql);
@@ -179,9 +177,7 @@ public class UsuarioController implements IUsuarioController {
             response.setMessage("Ha ocurrido un error");
             response.setTitle("Error");
             response.setMessageType(JOptionPane.ERROR_MESSAGE);
-        }
-        
+        } 
         return response;
     }
-    
 }

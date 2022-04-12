@@ -30,6 +30,7 @@ public class ArticuloController implements IArticuloController<Articulo> {
     public int create(Articulo entity) {
         Connection connection = dbContext.connect();
         int idArticulo = 0;
+        
         try {
             Statement statement = connection.createStatement();
             String sql = "INSERT INTO item (code, name, description, quantity, purchase_price, sale_price, reorder_point)"
@@ -43,8 +44,7 @@ public class ArticuloController implements IArticuloController<Articulo> {
             
             ResultSet result = statement.executeQuery(sql);
             
-            if (result.next())
-                idArticulo = result.getInt("id");
+            if (result.next()) idArticulo = result.getInt("id");
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -118,6 +118,7 @@ public class ArticuloController implements IArticuloController<Articulo> {
     public Articulo getById(int id) {
         Connection connection = dbContext.connect();
         Articulo articulo = new Articulo();
+        
         try {
             Statement statement = connection.createStatement();
             String sql = "SELECT * FROM item WHERE id=" + id;
@@ -138,8 +139,6 @@ public class ArticuloController implements IArticuloController<Articulo> {
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
         return articulo;
     }
-    
 }

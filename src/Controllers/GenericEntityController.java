@@ -1,4 +1,4 @@
-/*
+    /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
@@ -13,8 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -33,8 +32,8 @@ public class GenericEntityController implements IBaseGenericController<GenericEn
     public List<GenericEntity> getAll() {
         Connection connection = dbContext.connect();
         List<GenericEntity> genericEntities = new ArrayList<>();
-        
         String sql = "SELECT * FROM " + this.entityType + " ORDER BY id ASC";
+        
         try {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(sql);
@@ -44,13 +43,11 @@ public class GenericEntityController implements IBaseGenericController<GenericEn
                 
                 genericEntity.setId(result.getInt("id"));
                 genericEntity.setName(result.getString("name"));
-                
                 genericEntities.add(genericEntity);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(GenericEntityController.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
         return genericEntities;
     }
 
@@ -58,41 +55,38 @@ public class GenericEntityController implements IBaseGenericController<GenericEn
     public GenericEntity getById(int id) {
         Connection connection = dbContext.connect();
         GenericEntity entity = new GenericEntity();
-        
         String sql = "SELECT * FROM " + this.entityType + " WHERE id=" + id;
         
         try {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(sql);
+            
             if (result.next()) {
                 entity.setId(result.getInt("id"));
                 entity.setName(result.getString("name"));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(GenericEntityController.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
         return entity;
     }
     
     public GenericEntity getByName(String name) {
         Connection connection = dbContext.connect();
         GenericEntity entity = new GenericEntity();
-        
         String sql = "SELECT * FROM " + this.entityType + " WHERE name='" + name + "'";
         
         try {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(sql);
+            
             if (result.next()) {
                 entity.setId(result.getInt("id"));
                 entity.setName(result.getString("name"));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(GenericEntityController.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
         return entity;
     }
-    
 }
