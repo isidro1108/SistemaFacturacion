@@ -213,7 +213,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
         return i;
     }
     
-    private void saveOrUpdateArticulo() {
+    private boolean saveOrUpdateArticulo() {
         setFormStatus();
         if (formStatus.isValid()) { 
             GenericEntity tipoArticulo = this.tipoArticulos.get(cBoxTipoArticulo.getSelectedIndex());
@@ -234,6 +234,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
                     updateTable(articulo);
                     clearForm();
                     JOptionPane.showMessageDialog(null, "Artículo " + (articulo.getId() > 0 ? "modificado" : "agregado") + " con éxito", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    return true;
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(null, "Debe insertar números enteros o decimales en los campos \"Precio de compra\" y \"Precio de venta\"", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -244,6 +245,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, formStatus.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
         }
         formStatus.clearStatus();
+        return false;
     }
 
     /**
@@ -623,9 +625,10 @@ public class RegistroArticulos extends javax.swing.JFrame {
     }//GEN-LAST:event_btnModificarActionPerformed
 
     private void btnGuardarCambiosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarCambiosActionPerformed
-        saveOrUpdateArticulo();
-        toggleButtons(false);
-        this.articulo = new Articulo();
+        if (saveOrUpdateArticulo()) {
+            toggleButtons(false);
+            this.articulo = new Articulo();
+        }
     }//GEN-LAST:event_btnGuardarCambiosActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
