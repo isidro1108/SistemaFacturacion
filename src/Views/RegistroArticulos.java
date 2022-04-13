@@ -5,8 +5,10 @@
 package Views;
 
 import Controllers.ArticuloController;
+import Controllers.GenericEntityController;
 import Entities.Articulo;
 import Entities.CustomResponses.FormStatus;
+import Entities.GenericEntity;
 import Views.Constants.Constants;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -22,8 +24,10 @@ import javax.swing.table.DefaultTableModel;
  */
 public class RegistroArticulos extends javax.swing.JFrame {
     private final ArticuloController articuloController;
+    private final GenericEntityController tipoArticuloController;
     private final FormStatus formStatus;
     private final List<Integer> idsArticulos;
+    private final List<GenericEntity> tipoArticulos;
     private Articulo articulo;
     private int idToAdd;
     private int indexRowToModify;
@@ -33,8 +37,10 @@ public class RegistroArticulos extends javax.swing.JFrame {
      */
     public RegistroArticulos() {
         this.articuloController = new ArticuloController();
+        this.tipoArticuloController = new GenericEntityController("item_type");
         this.formStatus = new FormStatus();
         this.idsArticulos = new ArrayList<>();
+        this.tipoArticulos = this.tipoArticuloController.getAll();
         this.articulo = new Articulo();
         this.idToAdd = 0;
         this.indexRowToModify = -1;
@@ -44,6 +50,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
         setResizable(false);
         setTitle("Artículos");
         initTable();
+        getTipoArticulos();
         jPanel1.setBackground(Constants.Colors.LIGHT_BLUE);
         jPanel2.setBackground(Constants.Colors.DARK_BLUE);
         jLabel1.setForeground(Constants.Colors.DARK_BLUE);
@@ -66,6 +73,12 @@ public class RegistroArticulos extends javax.swing.JFrame {
         jTableArticulos.setModel(model);
     }
     
+    private void getTipoArticulos() {
+        this.tipoArticulos.forEach(tipoArticulo -> {
+            cBoxTipoArticulo.addItem(tipoArticulo.getName());
+        });
+    }
+    
     private void updateTable(Articulo articulo) {
         if (articulo.getId() > 0) {
             updateRow(articulo);
@@ -80,9 +93,11 @@ public class RegistroArticulos extends javax.swing.JFrame {
         DecimalFormat customFormat = new DecimalFormat("#.00");
         String purchasePrice = customFormat.format(articulo.getPurchasePrice());
         String salePrice = customFormat.format(articulo.getSalePrice());
+        GenericEntity tipoArticulo = this.tipoArticuloController.getById(articulo.getIdItemType());
         Object[] articuloData = new Object[] {
             articulo.getCode(),
             articulo.getName(),
+            tipoArticulo.getName(),
             articulo.getDescription(),
             articulo.getQuantity(),
             purchasePrice,
@@ -98,11 +113,13 @@ public class RegistroArticulos extends javax.swing.JFrame {
         DecimalFormat customFormat = new DecimalFormat("#.00");
         String purchasePrice = customFormat.format(articulo.getPurchasePrice());
         String salePrice = customFormat.format(articulo.getSalePrice());
+        GenericEntity tipoArticulo = this.tipoArticuloController.getById(articulo.getIdItemType());
         int id = articulo.getId();
         idsArticulos.add(id > 0 ? id : this.idToAdd);
         model.addRow(new Object[] {
             articulo.getCode(),
             articulo.getName(),
+            tipoArticulo.getName(),
             articulo.getDescription(),
             articulo.getQuantity(),
             purchasePrice,
@@ -114,6 +131,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
     private void setColumns(DefaultTableModel model) {
         model.addColumn("Código");
         model.addColumn("Nombre");
+        model.addColumn("Tipo de artículo");
         model.addColumn("Descripción");
         model.addColumn("Cantidad");
         model.addColumn("Precio de compra");
@@ -168,6 +186,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
     private void clearForm() {
         txtCode.setText("");
         txtName.setText("");
+        cBoxTipoArticulo.setSelectedIndex(0);
         txtDescription.setText("");
         txtQuantity.setText("");
         txtPurchasePrice.setText("");
@@ -177,6 +196,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
     
     private void toggleButtons(boolean inEdition) {
         btnAgregar.setEnabled(!inEdition);
+        btnAgregarNuevoTipoArticulo.setEnabled(!inEdition);
         btnModificar.setEnabled(!inEdition);
         btnEliminar.setEnabled(!inEdition);
         btnSalir.setEnabled(!inEdition);
@@ -184,11 +204,24 @@ public class RegistroArticulos extends javax.swing.JFrame {
         btnCancelar.setVisible(inEdition);
     }
     
+    private int getIndexTipoArticulo(Articulo articulo) {
+        int i = 0;
+        for (GenericEntity tipoArticulo : this.tipoArticulos) {
+            if (tipoArticulo.getId() == articulo.getIdItemType()) return i; 
+            i++;
+        }
+        return i;
+    }
+    
     private void saveOrUpdateArticulo() {
         setFormStatus();
-        if (formStatus.isValid()) {        
+        if (formStatus.isValid()) { 
+            GenericEntity tipoArticulo = this.tipoArticulos.get(cBoxTipoArticulo.getSelectedIndex());
+            int idTipoArticulo = tipoArticulo.getId();
+            
             articulo.setCode(txtCode.getText());
             articulo.setName(txtName.getText());
+            articulo.setIdItemType(idTipoArticulo);
             articulo.setDescription(txtDescription.getText());
             try {
                 articulo.setQuantity(Integer.parseInt(txtQuantity.getText()));
@@ -242,12 +275,15 @@ public class RegistroArticulos extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         txtQuantity = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
+        cBoxTipoArticulo = new javax.swing.JComboBox<>();
+        jLabel9 = new javax.swing.JLabel();
         btnAgregar = new javax.swing.JButton();
         btnSalir = new javax.swing.JButton();
         btnModificar = new javax.swing.JButton();
         btnEliminar = new javax.swing.JButton();
         btnGuardarCambios = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
+        btnAgregarNuevoTipoArticulo = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -309,6 +345,10 @@ public class RegistroArticulos extends javax.swing.JFrame {
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("Cantidad:");
 
+        jLabel9.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel9.setText("Tipo de artículo:");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -328,7 +368,8 @@ public class RegistroArticulos extends javax.swing.JFrame {
                             .addComponent(jLabel3)
                             .addComponent(jLabel4)
                             .addComponent(jLabel5)
-                            .addComponent(jLabel6))
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel9))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtQuantity)
@@ -336,7 +377,8 @@ public class RegistroArticulos extends javax.swing.JFrame {
                             .addComponent(txtName)
                             .addComponent(txtPurchasePrice)
                             .addComponent(txtSalePrice, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(txtCode))))
+                            .addComponent(txtCode)
+                            .addComponent(cBoxTipoArticulo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(43, 43, 43))
         );
         jPanel2Layout.setVerticalGroup(
@@ -351,27 +393,32 @@ public class RegistroArticulos extends javax.swing.JFrame {
                     .addComponent(jLabel3)
                     .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cBoxTipoArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtPurchasePrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtSalePrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtReorderPoint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7)))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel4)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtPurchasePrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtSalePrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtReorderPoint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -435,6 +482,16 @@ public class RegistroArticulos extends javax.swing.JFrame {
             }
         });
 
+        btnAgregarNuevoTipoArticulo.setBackground(new java.awt.Color(0, 0, 255));
+        btnAgregarNuevoTipoArticulo.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        btnAgregarNuevoTipoArticulo.setForeground(new java.awt.Color(255, 255, 255));
+        btnAgregarNuevoTipoArticulo.setText("Agregar nuevo tipo de artículo");
+        btnAgregarNuevoTipoArticulo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarNuevoTipoArticuloActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -445,46 +502,47 @@ public class RegistroArticulos extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnModificar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(27, 27, 27)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(btnAgregar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnAgregarNuevoTipoArticulo, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
+                            .addComponent(btnModificar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnEliminar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
+                            .addComponent(btnSalir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(35, 35, 35)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnGuardarCambios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnGuardarCambios, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
                             .addComponent(btnCancelar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(330, Short.MAX_VALUE))
+                .addContainerGap(167, Short.MAX_VALUE))
             .addComponent(jScrollPane1)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addComponent(jLabel1)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(btnModificar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(btnGuardarCambios, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnAgregarNuevoTipoArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnGuardarCambios, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnModificar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(39, 39, 39)))
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(47, 47, 47)))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -544,9 +602,11 @@ public class RegistroArticulos extends javax.swing.JFrame {
             this.indexRowToModify = indexes[0];
             int idArticulo = this.idsArticulos.get(indexRowToModify);
             this.articulo = this.articuloController.getById(idArticulo);
+            int indexTipoArticulo = getIndexTipoArticulo(this.articulo);
             
             txtCode.setText(articulo.getCode());
             txtName.setText(articulo.getName());
+            cBoxTipoArticulo.setSelectedIndex(indexTipoArticulo);
             txtDescription.setText(articulo.getDescription());
             txtQuantity.setText(String.valueOf(articulo.getQuantity()));
             txtPurchasePrice.setText(String.valueOf(articulo.getPurchasePrice()));
@@ -573,6 +633,21 @@ public class RegistroArticulos extends javax.swing.JFrame {
         this.articulo = new Articulo();
         clearForm();
     }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void btnAgregarNuevoTipoArticuloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarNuevoTipoArticuloActionPerformed
+        String nameItemType = JOptionPane.showInputDialog(null, "Nuevo tipo de artículo", "Tipo de artículo", JOptionPane.DEFAULT_OPTION);
+        if (nameItemType != null) {
+            if (!"".equals(nameItemType)) {
+                GenericEntity tipoArticulo = new GenericEntity();
+                tipoArticulo.setName(nameItemType);
+                tipoArticulo.setId(this.tipoArticuloController.create(tipoArticulo));
+                this.tipoArticulos.add(tipoArticulo);
+                this.cBoxTipoArticulo.addItem(tipoArticulo.getName());
+            } else {
+                JOptionPane.showMessageDialog(null, "No se guardó ningún tipo de artículo");
+            }
+        }
+    }//GEN-LAST:event_btnAgregarNuevoTipoArticuloActionPerformed
 
     /**
      * @param args the command line arguments
@@ -611,11 +686,13 @@ public class RegistroArticulos extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregar;
+    private javax.swing.JButton btnAgregarNuevoTipoArticulo;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnGuardarCambios;
     private javax.swing.JButton btnModificar;
     private javax.swing.JButton btnSalir;
+    private javax.swing.JComboBox<String> cBoxTipoArticulo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -624,6 +701,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

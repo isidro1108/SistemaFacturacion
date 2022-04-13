@@ -4,12 +4,27 @@
  */
 package Controllers.Interfaces.Shared;
 
+import java.util.List;
+
 /**
  *
  * @author euris
  * @param <T>
  */
-public interface IGenericController<T> extends IBaseGenericController<T> {
+public interface IGenericController<T> {
+    /**
+     *
+     * @return
+     */
+    List<T> getAll();
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    T getById(int id);
+    
     /**
      *
      * @param entity

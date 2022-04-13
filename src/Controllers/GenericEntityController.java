@@ -5,7 +5,7 @@
 package Controllers;
 
 import Controllers.DataContext.DataContext;
-import Controllers.Interfaces.Shared.IBaseGenericController;
+import Controllers.Interfaces.Shared.IGenericController;
 import Entities.GenericEntity;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -19,7 +19,7 @@ import javax.swing.JOptionPane;
  *
  * @author euris
  */
-public class GenericEntityController implements IBaseGenericController<GenericEntity> {
+public class GenericEntityController implements IGenericController<GenericEntity> {
     private final DataContext dbContext;
     private final String entityType;
 
@@ -88,5 +88,49 @@ public class GenericEntityController implements IBaseGenericController<GenericEn
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
         return entity;
+    }
+
+    @Override
+    public int create(GenericEntity entity) {
+        Connection connection = dbContext.connect();
+        int idEntity = 0;
+        try {
+            Statement statement = connection.createStatement();
+            String sql = "INSERT INTO " + this.entityType + "(name) "
+                    + "VALUES ('" + entity.getName() + "') RETURNING id";
+            
+            ResultSet result = statement.executeQuery(sql);
+            if (result.next()) idEntity = result.getInt("id");
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return idEntity;
+    }
+
+    @Override
+    public void update(GenericEntity entity) {
+        Connection connection = dbContext.connect();
+        try {
+            Statement statement = connection.createStatement();
+            String sql = "UPDATE " + this.entityType + " SET "
+                    + "name='" + entity.getName() + "'"
+                    + "WHERE id=" + entity.getId();
+            
+            statement.execute(sql);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    @Override
+    public void delete(int id) {
+        Connection connection = dbContext.connect();
+        try {
+            Statement statement = connection.createStatement();
+            String sql = "DELETE FROM " + this.entityType + "WHERE id =" + id;
+            statement.execute(sql);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

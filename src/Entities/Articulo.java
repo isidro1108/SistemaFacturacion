@@ -10,6 +10,7 @@ package Entities;
  */
 public class Articulo {
     private int id;
+    private int idItemType;
     private String code;
     private String name;
     private String description;
@@ -24,6 +25,14 @@ public class Articulo {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getIdItemType() {
+        return idItemType;
+    }
+
+    public void setIdItemType(int idItemType) {
+        this.idItemType = idItemType;
     }
 
     public String getCode() {

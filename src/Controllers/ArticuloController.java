@@ -33,8 +33,9 @@ public class ArticuloController implements IArticuloController<Articulo> {
         
         try {
             Statement statement = connection.createStatement();
-            String sql = "INSERT INTO item (code, name, description, quantity, purchase_price, sale_price, reorder_point)"
-                    + "VALUES ('"+ entity.getCode() + "', "
+            String sql = "INSERT INTO item (id_item_type, code, name, description, quantity, purchase_price, sale_price, reorder_point)"
+                    + "VALUES (" + entity.getIdItemType() + ", "
+                    + "'"+ entity.getCode() + "', "
                     + "'"+ entity.getName() + "', "
                     + "'"+ entity.getDescription() + "', "
                     + entity.getQuantity() + ", "
@@ -57,6 +58,7 @@ public class ArticuloController implements IArticuloController<Articulo> {
         try {
             Statement statement = connection.createStatement();
             String sql = "UPDATE item SET "
+                    + "id_item_type=" + entity.getIdItemType() + ", "
                     + "code='" + entity.getCode() + "', "
                     + "name='" + entity.getName() + "', "
                     + "description='" + entity.getDescription() + "', "
@@ -97,6 +99,7 @@ public class ArticuloController implements IArticuloController<Articulo> {
                 Articulo articulo = new Articulo();
                 
                 articulo.setId(result.getInt("id"));
+                articulo.setIdItemType(result.getInt("id_item_type"));
                 articulo.setCode(result.getString("code"));
                 articulo.setName(result.getString("name"));
                 articulo.setDescription(result.getString("description"));
@@ -126,6 +129,7 @@ public class ArticuloController implements IArticuloController<Articulo> {
             
             if (result.next()) {
                 articulo.setId(result.getInt("id"));
+                articulo.setIdItemType(result.getInt("id_item_type"));
                 articulo.setCode(result.getString("code"));
                 articulo.setName(result.getString("name"));
                 articulo.setDescription(result.getString("description"));
