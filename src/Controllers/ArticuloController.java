@@ -33,7 +33,7 @@ public class ArticuloController implements IArticuloController<Articulo> {
         
         try {
             Statement statement = connection.createStatement();
-            String sql = "INSERT INTO item (id_item_type, code, name, description, quantity, purchase_price, sale_price, reorder_point)"
+            String sql = "INSERT INTO item (id_item_type, code, name, description, quantity, purchase_price, sale_price, reorder_point, itbis)"
                     + "VALUES (" + entity.getIdItemType() + ", "
                     + "'"+ entity.getCode() + "', "
                     + "'"+ entity.getName() + "', "
@@ -41,7 +41,8 @@ public class ArticuloController implements IArticuloController<Articulo> {
                     + entity.getQuantity() + ", "
                     + entity.getPurchasePrice() + ", "
                     + entity.getSalePrice() + ", "
-                    + entity.getReorderPoint() + ") RETURNING id";
+                    + entity.getReorderPoint() + ", "
+                    + entity.getItbis() + ") RETURNING id";
             
             ResultSet result = statement.executeQuery(sql);
             
@@ -65,7 +66,8 @@ public class ArticuloController implements IArticuloController<Articulo> {
                     + "quantity=" + entity.getQuantity() + ", "
                     + "purchase_price=" + entity.getPurchasePrice() + ", "
                     + "sale_price=" + entity.getSalePrice() + ", "
-                    + "reorder_point=" + entity.getReorderPoint()
+                    + "reorder_point=" + entity.getReorderPoint() + ", "
+                    + "itbis=" + entity.getItbis()
                     + " WHERE id=" + entity.getId();
 
             statement.execute(sql);
@@ -107,6 +109,7 @@ public class ArticuloController implements IArticuloController<Articulo> {
                 articulo.setPurchasePrice(result.getFloat("purchase_price"));
                 articulo.setSalePrice(result.getFloat("sale_price"));
                 articulo.setReorderPoint(result.getInt("reorder_point"));
+                articulo.setItbis(result.getFloat("itbis"));
                 
                 articulos.add(articulo);
             }
@@ -137,6 +140,7 @@ public class ArticuloController implements IArticuloController<Articulo> {
                 articulo.setPurchasePrice(result.getFloat("purchase_price"));
                 articulo.setSalePrice(result.getFloat("sale_price"));
                 articulo.setReorderPoint(result.getInt("reorder_point"));
+                articulo.setItbis(result.getFloat("itbis"));
             } else {
                 JOptionPane.showMessageDialog(null, "Este artículo no existe", "Warning", JOptionPane.WARNING_MESSAGE);
             }

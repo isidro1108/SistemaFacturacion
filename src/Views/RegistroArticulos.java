@@ -102,7 +102,8 @@ public class RegistroArticulos extends javax.swing.JFrame {
             articulo.getQuantity(),
             purchasePrice,
             salePrice,
-            articulo.getReorderPoint()
+            articulo.getReorderPoint(),
+            articulo.getItbis()
         };
         
         for (int i = 0; i < articuloData.length; i++)
@@ -124,7 +125,8 @@ public class RegistroArticulos extends javax.swing.JFrame {
             articulo.getQuantity(),
             purchasePrice,
             salePrice,
-            articulo.getReorderPoint()
+            articulo.getReorderPoint(),
+            articulo.getItbis()
         });
     }
     
@@ -137,11 +139,12 @@ public class RegistroArticulos extends javax.swing.JFrame {
         model.addColumn("Precio de compra");
         model.addColumn("Precio de venta");
         model.addColumn("Punto de reorden");
+        model.addColumn("ITBIS");
     }
     
     
     private void setFormStatus() {               
-        Object[] fields = new Object[] { txtCode, txtName, txtDescription, txtQuantity, txtPurchasePrice, txtSalePrice, txtReorderPoint }; 
+        Object[] fields = new Object[] { txtCode, txtName, txtDescription, txtQuantity, txtPurchasePrice, txtSalePrice, txtReorderPoint, txtItbis }; 
         
         for (Object field : fields) {
             try {
@@ -158,10 +161,12 @@ public class RegistroArticulos extends javax.swing.JFrame {
         } else if (size > 1) {
             int i = 0;
             String message = "Debe llenar los campos ";
+            char firstLetterLastWord = nameInvalidFields.get(size - 1).charAt(0);
+            String lastSeparator = "i".equals(String.valueOf(firstLetterLastWord).toLowerCase()) ? " e " : " y ";
             for (String nameInvalidField : nameInvalidFields) {
                 String separator = i == size - 1 
                         ? "." : i == size - 2
-                        ? " y " : ", ";
+                        ? lastSeparator : ", ";
                 message+= "\"" + nameInvalidField + "\"" + separator;
                 i++;
             }
@@ -192,6 +197,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
         txtPurchasePrice.setText("");
         txtSalePrice.setText("");
         txtReorderPoint.setText("");
+        txtItbis.setText("");
     }
     
     private void toggleButtons(boolean inEdition) {
@@ -229,14 +235,15 @@ public class RegistroArticulos extends javax.swing.JFrame {
                 try {
                     articulo.setPurchasePrice(Float.parseFloat(txtPurchasePrice.getText()));
                     articulo.setSalePrice(Float.parseFloat(txtSalePrice.getText()));
+                    articulo.setItbis(Float.parseFloat(txtItbis.getText()));
                     if (articulo.getId() > 0) articuloController.update(articulo);
-                    else this.idToAdd =  articuloController.create(articulo);
+                    else this.idToAdd = articuloController.create(articulo);
                     updateTable(articulo);
                     clearForm();
                     JOptionPane.showMessageDialog(null, "Artículo " + (articulo.getId() > 0 ? "modificado" : "agregado") + " con éxito", "Success", JOptionPane.INFORMATION_MESSAGE);
                     return true;
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(null, "Debe insertar números enteros o decimales en los campos \"Precio de compra\" y \"Precio de venta\"", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Debe insertar números enteros o decimales en los campos \"Precio de compra\", \"Precio de venta\" e \"ITBIS\"", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null, "Debe insertar números enteros en los campos \"Cantidad\" y \"Punto de reorden\"", "Error", JOptionPane.ERROR_MESSAGE);
@@ -279,6 +286,8 @@ public class RegistroArticulos extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         cBoxTipoArticulo = new javax.swing.JComboBox<>();
         jLabel9 = new javax.swing.JLabel();
+        txtItbis = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
         btnAgregar = new javax.swing.JButton();
         btnSalir = new javax.swing.JButton();
         btnModificar = new javax.swing.JButton();
@@ -351,18 +360,19 @@ public class RegistroArticulos extends javax.swing.JFrame {
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Tipo de artículo:");
 
+        txtItbis.setName("ITBIS"); // NOI18N
+
+        jLabel10.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel10.setText("ITBIS:");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtReorderPoint))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addGap(26, 26, 26)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel8)
@@ -380,7 +390,16 @@ public class RegistroArticulos extends javax.swing.JFrame {
                             .addComponent(txtPurchasePrice)
                             .addComponent(txtSalePrice, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(txtCode)
-                            .addComponent(cBoxTipoArticulo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(cBoxTipoArticulo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                        .addGap(28, 28, 28)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel10))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtItbis)
+                            .addComponent(txtReorderPoint))))
                 .addGap(43, 43, 43))
         );
         jPanel2Layout.setVerticalGroup(
@@ -401,7 +420,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -413,14 +432,16 @@ public class RegistroArticulos extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtSalePrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtReorderPoint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                            .addComponent(jLabel6)))
+                    .addComponent(jLabel4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtReorderPoint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtItbis, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel10))
                 .addContainerGap())
         );
 
@@ -520,16 +541,16 @@ public class RegistroArticulos extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(0, 84, Short.MAX_VALUE)
                         .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -543,8 +564,8 @@ public class RegistroArticulos extends javax.swing.JFrame {
                         .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(47, 47, 47)))
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(83, 83, 83)))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -614,6 +635,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
             txtPurchasePrice.setText(String.valueOf(articulo.getPurchasePrice()));
             txtSalePrice.setText(String.valueOf(articulo.getSalePrice()));
             txtReorderPoint.setText(String.valueOf(articulo.getReorderPoint()));
+            txtItbis.setText(String.valueOf(articulo.getItbis()));
             toggleButtons(true);
         } else {
             String message = length == 0 
@@ -697,6 +719,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
     private javax.swing.JButton btnSalir;
     private javax.swing.JComboBox<String> cBoxTipoArticulo;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -712,6 +735,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
     private javax.swing.JTable jTableArticulos;
     private javax.swing.JTextField txtCode;
     private javax.swing.JTextArea txtDescription;
+    private javax.swing.JTextField txtItbis;
     private javax.swing.JTextField txtName;
     private javax.swing.JTextField txtPurchasePrice;
     private javax.swing.JTextField txtQuantity;

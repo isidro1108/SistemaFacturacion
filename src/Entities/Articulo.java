@@ -18,6 +18,7 @@ public class Articulo {
     private float purchasePrice;
     private float salePrice;
     private int reorderPoint;
+    private float itbis;
 
     public int getId() {
         return id;
@@ -89,5 +90,13 @@ public class Articulo {
 
     public void setReorderPoint(int reorderPoint) {
         this.reorderPoint = reorderPoint;
+    }
+
+    public float getItbis() {
+        return itbis;
+    }
+
+    public void setItbis(float itbis) {
+        this.itbis = itbis;
     }
 }
