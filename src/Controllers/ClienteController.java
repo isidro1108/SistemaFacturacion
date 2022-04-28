@@ -60,7 +60,7 @@ public class ClienteController implements IClienteController {
     public Cliente getById(int id) {
         Connection connection = dbContext.connect();
         Cliente cliente = new Cliente();
-        String sql = "SELECT * FROM customer ORDER BY id ASC";
+        String sql = "SELECT * FROM customer WHERE id=" + id;
         
         try {
             Statement statement = connection.createStatement();

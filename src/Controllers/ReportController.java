@@ -30,7 +30,7 @@ public class ReportController {
     public void renderListadoExistencia(List<Articulo> articulos) {
         try {            
             List<ArticuloComputed> articulosComputed = new ArrayList<>();
-            DecimalFormat customFormat = new DecimalFormat("$ ,###.00");
+            DecimalFormat customFormat = new DecimalFormat("$ ,##0.00");
             float generalSubTotal = 0;
             float generalItbis = 0;
             float generalTotal = 0;
@@ -65,7 +65,7 @@ public class ReportController {
             String reportPath = "C:\\Users\\euris\\Escritorio\\NetBeans Projects\\SistemaFacturacion\\src\\Views\\Reports\\ListadoExistencia.jrxml";
             JasperReport jasperReport = JasperCompileManager.compileReport(reportPath);
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JRBeanCollectionDataSource(articulosComputed));
-            JasperViewer.viewReport(jasperPrint);
+            JasperViewer.viewReport(jasperPrint, false);
         } catch (JRException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }

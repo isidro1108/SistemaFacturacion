@@ -6,6 +6,7 @@ package sistemafacturacion;
 
 import Controllers.Utils.Utils;
 import Views.Login;
+import Views.MainMenu;
 import Views.WelcomeUserAdmin;
 
 /**
@@ -21,8 +22,10 @@ public class SistemaFacturacion {
             WelcomeUserAdmin welcomeView = new WelcomeUserAdmin();
             welcomeView.setVisible(true);
         } else {
-            Login login = new Login();
-            login.setVisible(true);
+//            Login login = new Login();
+//            login.setVisible(true);
+            MainMenu mainMenu = new MainMenu();
+            mainMenu.setVisible(true);
         }
     }
     
