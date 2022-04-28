@@ -9,6 +9,9 @@ package Entities;
  * @author euris
  */
 public class ArticuloFactura {
+    private int id;
+    private int idItem;
+    private int idInvoice;
     private String code;
     private String name;
     private int quantity;
@@ -16,6 +19,30 @@ public class ArticuloFactura {
     private float itbis;
     private float subTotal;
     private float total;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getIdItem() {
+        return idItem;
+    }
+
+    public void setIdItem(int idItem) {
+        this.idItem = idItem;
+    }
+
+    public int getIdInvoice() {
+        return idInvoice;
+    }
+
+    public void setIdInvoice(int idInvoice) {
+        this.idInvoice = idInvoice;
+    }
 
     public String getCode() {
         return code;
