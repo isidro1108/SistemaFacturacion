@@ -240,6 +240,7 @@ public class RegistroArticulos extends javax.swing.JFrame {
                     else this.idToAdd = articuloController.create(articulo);
                     updateTable(articulo);
                     clearForm();
+                    formStatus.clearStatus();
                     JOptionPane.showMessageDialog(null, "Artículo " + (articulo.getId() > 0 ? "modificado" : "agregado") + " con éxito", "Success", JOptionPane.INFORMATION_MESSAGE);
                     return true;
                 } catch (NumberFormatException ex) {
