@@ -51,6 +51,7 @@ public class UsuarioController implements IUsuarioController {
                 usuario.setPassword(result.getString("password"));
                 usuarios.add(usuario);
             }
+            connection.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -79,6 +80,7 @@ public class UsuarioController implements IUsuarioController {
             } else {
                 JOptionPane.showMessageDialog(null, "Este usuario no existe", "Warning", JOptionPane.WARNING_MESSAGE);
             }
+            connection.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -104,6 +106,7 @@ public class UsuarioController implements IUsuarioController {
             ResultSet result = statement.executeQuery(sql);
             
             if (result.next()) idUser = result.getInt("id");
+            connection.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -128,6 +131,7 @@ public class UsuarioController implements IUsuarioController {
                     + "WHERE id=" + usuario.getId();
             
             statement.execute(sql);
+            connection.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -140,6 +144,7 @@ public class UsuarioController implements IUsuarioController {
             Statement statement = connection.createStatement();
             String sql = "DELETE FROM \"user\" WHERE id=" + id;
             statement.execute(sql);
+            connection.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -173,6 +178,7 @@ public class UsuarioController implements IUsuarioController {
                 response.setTitle("Warning");
                 response.setMessageType(JOptionPane.WARNING_MESSAGE);
             }
+            connection.close();
         } catch (SQLException ex) {
             response.setMessage("Ha ocurrido un error");
             response.setTitle("Error");

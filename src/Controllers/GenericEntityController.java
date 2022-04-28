@@ -45,6 +45,7 @@ public class GenericEntityController implements IGenericController<GenericEntity
                 genericEntity.setName(result.getString("name"));
                 genericEntities.add(genericEntity);
             }
+            connection.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -65,6 +66,7 @@ public class GenericEntityController implements IGenericController<GenericEntity
                 entity.setId(result.getInt("id"));
                 entity.setName(result.getString("name"));
             }
+            connection.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -84,6 +86,7 @@ public class GenericEntityController implements IGenericController<GenericEntity
                 entity.setId(result.getInt("id"));
                 entity.setName(result.getString("name"));
             }
+            connection.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -101,6 +104,7 @@ public class GenericEntityController implements IGenericController<GenericEntity
             
             ResultSet result = statement.executeQuery(sql);
             if (result.next()) idEntity = result.getInt("id");
+            connection.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -117,6 +121,7 @@ public class GenericEntityController implements IGenericController<GenericEntity
                     + "WHERE id=" + entity.getId();
             
             statement.execute(sql);
+            connection.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -129,6 +134,7 @@ public class GenericEntityController implements IGenericController<GenericEntity
             Statement statement = connection.createStatement();
             String sql = "DELETE FROM " + this.entityType + "WHERE id =" + id;
             statement.execute(sql);
+            connection.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }

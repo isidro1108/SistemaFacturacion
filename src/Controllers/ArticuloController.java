@@ -47,6 +47,7 @@ public class ArticuloController implements IArticuloController<Articulo> {
             ResultSet result = statement.executeQuery(sql);
             
             if (result.next()) idArticulo = result.getInt("id");
+            connection.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -71,6 +72,7 @@ public class ArticuloController implements IArticuloController<Articulo> {
                     + " WHERE id=" + entity.getId();
 
             statement.execute(sql);
+            connection.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -83,6 +85,7 @@ public class ArticuloController implements IArticuloController<Articulo> {
             Statement statement = connection.createStatement();
             String sql = "DELETE FROM item WHERE id=" + id;
             statement.execute(sql);
+            connection.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -113,6 +116,7 @@ public class ArticuloController implements IArticuloController<Articulo> {
                 
                 articulos.add(articulo);
             }
+            connection.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -144,6 +148,7 @@ public class ArticuloController implements IArticuloController<Articulo> {
             } else {
                 JOptionPane.showMessageDialog(null, "Este artículo no existe", "Warning", JOptionPane.WARNING_MESSAGE);
             }
+            connection.close();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex, "Error", JOptionPane.ERROR_MESSAGE);
         }

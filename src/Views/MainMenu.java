@@ -4,12 +4,16 @@
  */
 package Views;
 
+import Controllers.ArticuloController;
 import Controllers.GenericEntityController;
+import Controllers.ReportController;
 import Controllers.Utils.Utils;
+import Entities.Articulo;
 import Entities.Usuario;
 import Views.Constants.Constants;
 import java.awt.Color;
 import java.awt.Image;
+import java.util.List;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -20,11 +24,15 @@ import javax.swing.JButton;
  */
 public class MainMenu extends javax.swing.JFrame {
     private final Usuario currentUser;
+    private final ReportController reportController;
+    private final ArticuloController articuloController;
     /**
      * Creates new form MainMenu
      */
     public MainMenu() {
         this.currentUser = Utils.getCurrentUser();
+        this.reportController = new ReportController();
+        this.articuloController = new ArticuloController();
         
         initComponents();
         setResizable(false);
@@ -99,7 +107,7 @@ public class MainMenu extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 36)); // NOI18N
-        jLabel1.setText("Sistema Inventario");
+        jLabel1.setText("Supermercado La Bendición");
 
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -203,6 +211,11 @@ public class MainMenu extends javax.swing.JFrame {
         btnInventario.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         btnInventario.setForeground(new java.awt.Color(255, 255, 255));
         btnInventario.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnInventario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInventarioActionPerformed(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(0, 0, 255));
@@ -324,6 +337,11 @@ public class MainMenu extends javax.swing.JFrame {
         RegistroArticulos registroArticulos = new RegistroArticulos();
         registroArticulos.setVisible(true);
     }//GEN-LAST:event_btnArticulosActionPerformed
+
+    private void btnInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventarioActionPerformed
+        List<Articulo> articulos = this.articuloController.getAll();
+        this.reportController.renderListadoExistencia(articulos);
+    }//GEN-LAST:event_btnInventarioActionPerformed
 
     /**
      * @param args the command line arguments
