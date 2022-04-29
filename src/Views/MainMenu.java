@@ -36,8 +36,8 @@ public class MainMenu extends javax.swing.JFrame {
         
         initComponents();
         setResizable(false);
-//        setFullNameUser();
-//        setRoleUser();
+        setFullNameUser();
+        setRoleUser();
         setTitle("Menú principal");
         customSetButtonIcon("/Images/exit.png", jButton1, -20);
         customSetButtonIcon("/Images/empleado.png", btnEmployee, -15);

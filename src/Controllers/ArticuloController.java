@@ -114,7 +114,7 @@ public class ArticuloController implements IArticuloController<Articulo> {
                 articulo.setReorderPoint(result.getInt("reorder_point"));
                 articulo.setItbis(result.getFloat("itbis"));
                 
-                articulos.add(articulo);
+                if (articulo.getQuantity() > 0) articulos.add(articulo);
             }
             connection.close();
         } catch (SQLException ex) {

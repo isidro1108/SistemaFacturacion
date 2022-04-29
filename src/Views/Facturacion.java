@@ -7,10 +7,13 @@ package Views;
 import Controllers.ArticuloController;
 import Controllers.ClienteController;
 import Controllers.EmpleadoController;
+import Controllers.FacturaController;
+import Controllers.ReportController;
 import Entities.Articulo;
 import Entities.ArticuloFactura;
 import Entities.Cliente;
 import Entities.Empleado;
+import Entities.Factura;
 import Views.Constants.Constants;
 import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
@@ -28,15 +31,17 @@ public class Facturacion extends javax.swing.JFrame {
     private final ClienteController clienteController;
     private final EmpleadoController empleadoController;
     private final ArticuloController articuloController;
+    private final FacturaController facturaController;
+    private final ReportController reportController;
     private final List<Cliente> clientes;
     private final List<Empleado> empleados;
     private final List<Articulo> articulos;
-    private final List<ArticuloFactura> articulosFactura;
+    private List<ArticuloFactura> articulosFactura;
+    private final DecimalFormat customFormatPrices;
     private float generalSubTotal;
     private float generalItbis;
     private float generalTotal;
     private float efectivo;
-    private final DecimalFormat customFormatPrices;
     
     /**
      * Creates new form Facturacion
@@ -45,15 +50,17 @@ public class Facturacion extends javax.swing.JFrame {
         this.clienteController = new ClienteController();
         this.empleadoController = new EmpleadoController();
         this.articuloController = new ArticuloController();
+        this.facturaController = new FacturaController();
+        this.reportController = new ReportController();
         this.clientes = this.clienteController.getAll();
         this.empleados = this.empleadoController.getAll();
         this.articulos = this.articuloController.getAll();
         this.articulosFactura = new ArrayList<>();
+        this.customFormatPrices = new DecimalFormat("$ ,##0.00");
         this.generalSubTotal = 0;
         this.generalItbis = 0;
         this.generalTotal = 0;
         this.efectivo = 0;
-        this.customFormatPrices = new DecimalFormat("$ ,##0.00");
         
         initComponents();
         setTitle("Nueva Factura");
@@ -141,6 +148,47 @@ public class Facturacion extends javax.swing.JFrame {
         labelTotalItbis.setText(this.customFormatPrices.format(this.generalItbis));
         labelTotal.setText(this.customFormatPrices.format(this.generalTotal));
     }
+    
+    private boolean formIsValid() {
+        return jComboCliente.getSelectedIndex() > 0
+                && jComboVendedor.getSelectedIndex() > 0
+                && !"".equals(txtRnc.getText())
+                && !"".equals(txtNif.getText())
+                && !this.articulosFactura.isEmpty();
+    }
+    
+    private void clearStatus() {
+        this.articulosFactura = new ArrayList<>();
+        this.generalSubTotal = 0;
+        this.generalItbis = 0;
+        this.generalTotal = 0;
+        this.efectivo = 0;
+        clearFields();
+        clearTable();
+    }
+    
+    private void clearFields() {
+        jComboCliente.setSelectedIndex(0);
+        jComboVendedor.setSelectedIndex(0);
+        jComboArticulo.setSelectedIndex(0);
+        jComboTipoFactura.setSelectedIndex(0);
+        txtRnc.setText("");
+        txtNif.setText("");
+        labelSubTotal.setText("$ 0.00");
+        labelTotalItbis.setText("$ 0.00");
+        labelTotal.setText("$ 0.00");
+        labelEfectivo.setText("$ 0.00");
+        labelDevuelta.setText("$ 0.00");
+    }
+    
+    private void clearTable() {
+        int numRows = jTableFactura.getRowCount();
+        DefaultTableModel model = (DefaultTableModel)jTableFactura.getModel();
+        
+        for (int i = 0; i < numRows; i++) {
+            model.removeRow(0);
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -199,6 +247,7 @@ public class Facturacion extends javax.swing.JFrame {
         txtEmail.setEnabled(false);
 
         jComboCliente.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione el cliente" }));
+        jComboCliente.setName("Cliente"); // NOI18N
         jComboCliente.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 jComboClienteItemStateChanged(evt);
@@ -206,6 +255,7 @@ public class Facturacion extends javax.swing.JFrame {
         });
 
         jComboVendedor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione el vendedor" }));
+        jComboVendedor.setName("Vendedor"); // NOI18N
 
         jComboTipoFactura.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Crédito", "Al Contado" }));
         jComboTipoFactura.addItemListener(new java.awt.event.ItemListener() {
@@ -371,6 +421,11 @@ public class Facturacion extends javax.swing.JFrame {
         btnImprimir.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         btnImprimir.setForeground(new java.awt.Color(255, 255, 255));
         btnImprimir.setText("Imprimir");
+        btnImprimir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImprimirActionPerformed(evt);
+            }
+        });
 
         jComboArticulo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione un artículo" }));
         jComboArticulo.addActionListener(new java.awt.event.ActionListener() {
@@ -399,8 +454,12 @@ public class Facturacion extends javax.swing.JFrame {
             }
         });
 
+        txtRnc.setName("RNC"); // NOI18N
+
         jLabel12.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         jLabel12.setText("RNC:");
+
+        txtNif.setName("NIF"); // NOI18N
 
         jLabel13.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         jLabel13.setText("NIF:");
@@ -497,7 +556,7 @@ public class Facturacion extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jComboTipoPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(labelTipoPago))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -638,6 +697,62 @@ public class Facturacion extends javax.swing.JFrame {
             btnInsertarEfectivo.doClick();
         }
     }//GEN-LAST:event_txtEfectivoKeyPressed
+
+    private void btnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimirActionPerformed
+        if (formIsValid()) {
+            Factura factura = new Factura();
+            Cliente cliente = this.clientes.get(jComboCliente.getSelectedIndex() - 1);
+            Empleado empleado = this.empleados.get(jComboVendedor.getSelectedIndex() - 1);
+            String invoiceType = (String)jComboTipoFactura.getSelectedItem();
+            String paymentType = (String)jComboTipoPago.getSelectedItem();
+            boolean isCredito = "Crédito".equals(invoiceType);
+            
+            if (!(isCredito && cliente.getCreditLimit() < this.generalTotal)) {
+                if (!(!isCredito && "Efectivo".equals(paymentType) && this.efectivo < this.generalTotal)) {
+                    factura.setIdCustomer(cliente.getId());
+                    factura.setIdEmployee(empleado.getId());
+                    factura.setCode(String.valueOf(Math.round(Math.random() * 100000)));
+                    factura.setRnc(txtRnc.getText());
+                    factura.setNif(txtNif.getText());
+                    factura.setInvoiceType(invoiceType);
+                    factura.setPaymentType("Al Contado".equals(invoiceType) ? paymentType: "Ninguno");
+                    factura.setCash(this.efectivo);
+                    factura.setCreationDate(txtFecha.getDate());
+                    factura.setSoldItems(this.articulosFactura);
+
+                    if (this.facturaController.create(factura) > 0) {
+                        empleado.setSales(empleado.getSales() + this.generalTotal);
+                        this.empleadoController.update(empleado);
+
+                        if (isCredito) {
+                            cliente.setCreditLimit(cliente.getCreditLimit() - this.generalTotal);
+                            this.clienteController.update(cliente);
+                        }
+
+                        for (ArticuloFactura articuloFactura: this.articulosFactura) {
+                            Articulo articulo = this.articuloController.getById(articuloFactura.getIdItem());
+
+                            articulo.setQuantity(articulo.getQuantity() - articuloFactura.getQuantity());
+                            this.articuloController.update(articulo);
+
+                            if (articulo.getQuantity() <= articulo.getReorderPoint()) {
+                                JOptionPane.showMessageDialog(null, "ya quedan pocos artículos de estos: " + articulo.getName(), "Message", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                        }
+                        JOptionPane.showMessageDialog(null, "Factura guardada", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        this.reportController.renderNuevaFactura(factura);
+                        clearStatus();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Ingrese el efectivo", "Warning", JOptionPane.WARNING_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Esta compra no puede ser efectuada a crédito, sobrepasaría el límite de crédito del cliente", "Warning", JOptionPane.WARNING_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Debe completar todos los campos", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_btnImprimirActionPerformed
 
     /**
      * @param args the command line arguments

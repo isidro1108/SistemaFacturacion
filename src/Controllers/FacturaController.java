@@ -140,7 +140,7 @@ public class FacturaController implements IFacturaController {
                 + "'" + factura.getInvoiceType() + "', "
                 + "'" + factura.getPaymentType() + "', "
                 + factura.getCash() + ", "
-                + factura.getCreationDate() + ") RETURNING id";
+                + "'" + factura.getCreationDate() + "') RETURNING id";
         int idInvoice = 0;
         try {
             Statement statement = connection.createStatement();
@@ -148,9 +148,9 @@ public class FacturaController implements IFacturaController {
             if (result.next()) idInvoice = result.getInt("id");
             
             for (ArticuloFactura articuloFactura: factura.getSoldItems()) {
-                String sqlSoldItem = "INSERT INTO invoice (id_item, id_invoice, code, name, quantity, sale, itbis, sub_total) "
+                String sqlSoldItem = "INSERT INTO sold_item (id_item, id_invoice, code, name, quantity, sale, itbis, sub_total) "
                                 + "VALUES (" + articuloFactura.getIdItem() + ", "
-                                + factura.getId() + ", "
+                                + idInvoice + ", "
                                 + "'" + articuloFactura.getCode() + "', "
                                 + "'" + articuloFactura.getName() + "', "
                                 + articuloFactura.getQuantity() + ", "
@@ -181,7 +181,7 @@ public class FacturaController implements IFacturaController {
                     + "invoice_type='" + factura.getInvoiceType() + "', "
                     + "payment_type='" + factura.getPaymentType() + "', "
                     + "cash=" + factura.getCash() + ", "
-                    + "creation_date=" + factura.getCreationDate()
+                    + "creation_date='" + factura.getCreationDate() + "'"
                     + " WHERE id=" + factura.getId();
             
             statement.execute(sql);
