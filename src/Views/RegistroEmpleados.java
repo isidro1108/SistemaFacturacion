@@ -4,14 +4,15 @@
  */
 package Views;
 
-import Controllers.ClienteController;
-import Entities.Cliente;
+import Controllers.EmpleadoController;
 import Entities.CustomResponses.FormStatus;
+import Entities.Empleado;
 import Views.Constants.Constants;
 import com.toedter.calendar.JDateChooser;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -21,22 +22,22 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author euris
  */
-public class RegistroClientes extends javax.swing.JFrame {
-    private final ClienteController clienteController;
+public class RegistroEmpleados extends javax.swing.JFrame {
+    private final EmpleadoController empleadoController;
     private final FormStatus formStatus;
-    private final List<Integer> idsClientes;
-    private Cliente cliente;
+    private final List<Integer> idsEmpleados;
+    private Empleado empleado;
     private int idToAdd;
     private int indexRowToModify;
     
     /**
      * Creates new form RegistroArticulos
      */
-    public RegistroClientes() {
-        this.clienteController = new ClienteController();
+    public RegistroEmpleados() {
+        this.empleadoController = new EmpleadoController();
         this.formStatus = new FormStatus();
-        this.idsClientes = new ArrayList<>();
-        this.cliente = new Cliente();
+        this.idsEmpleados = new ArrayList<>();
+        this.empleado = new Empleado();
         this.idToAdd = 0;
         this.indexRowToModify = -1;
         
@@ -59,54 +60,60 @@ public class RegistroClientes extends javax.swing.JFrame {
                 return false;
             }
         };
-        List<Cliente> clientes = clienteController.getAll();
+        List<Empleado> empleados = this.empleadoController.getAll();
         setColumns(model);
-        clientes.forEach(cus -> {
-            addRowToTable(model, cus);
+        empleados.forEach(emp -> {
+            addRowToTable(model, emp);
         });
         jTableClientes.setModel(model);
     }
     
-    private void updateTable(Cliente cliente) {
-        if (cliente.getId() > 0) {
-            updateRow(cliente);
+    private void updateTable(Empleado empleado) {
+        if (empleado.getId() > 0) {
+            updateRow(empleado);
         } else {
             DefaultTableModel model = (DefaultTableModel) jTableClientes.getModel();
-            addRowToTable(model, cliente);
+            addRowToTable(model, empleado);
             jTableClientes.setModel(model);
         }
     }
     
-    private void updateRow(Cliente cliente) {
+    private void updateRow(Empleado empleado) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        DecimalFormat customFormat = new DecimalFormat("#.00");
-        Object[] clienteData = new Object[] {
-            cliente.getName(),
-            cliente.getLastName(),
-            cliente.getAddress(),
-            cliente.getPhone(),
-            cliente.getEmail(),
-            dateFormat.format(cliente.getDateOfBirth()),
-            customFormat.format(cliente.getCreditLimit())
+        DecimalFormat customFormat = new DecimalFormat("0.00");
+        Object[] empleadoData = new Object[] {
+            empleado.getName(),
+            empleado.getLastName(),
+            empleado.getAddress(),
+            empleado.getPhone(),
+            empleado.getIdentityCard(),
+            empleado.getEmail(),
+            empleado.getSalary(),
+            dateFormat.format(empleado.getDateOfBirth()),
+            dateFormat.format(empleado.getDateOfAdmission()),
+            customFormat.format(empleado.getSales())
         };
         
-        for (int i = 0; i < clienteData.length; i++)
-            jTableClientes.setValueAt(clienteData[i], indexRowToModify, i);
+        for (int i = 0; i < empleadoData.length; i++)
+            jTableClientes.setValueAt(empleadoData[i], indexRowToModify, i);
     }
     
-    private void addRowToTable(DefaultTableModel model, Cliente cliente) {
+    private void addRowToTable(DefaultTableModel model, Empleado empleado) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        DecimalFormat customFormat = new DecimalFormat("#.00");
-        int id = cliente.getId();
-        idsClientes.add(id > 0 ? id : this.idToAdd);
+        DecimalFormat customFormat = new DecimalFormat("0.00");
+        int id = empleado.getId();
+        this.idsEmpleados.add(id > 0 ? id : this.idToAdd);
         model.addRow(new Object[] {
-            cliente.getName(),
-            cliente.getLastName(),
-            cliente.getAddress(),
-            cliente.getPhone(),
-            cliente.getEmail(),
-            dateFormat.format(cliente.getDateOfBirth()),
-            customFormat.format(cliente.getCreditLimit())
+            empleado.getName(),
+            empleado.getLastName(),
+            empleado.getAddress(),
+            empleado.getPhone(),
+            empleado.getIdentityCard(),
+            empleado.getEmail(),
+            empleado.getSalary(),
+            dateFormat.format(empleado.getDateOfBirth()),
+            dateFormat.format(empleado.getDateOfAdmission()),
+            customFormat.format(empleado.getSales())
         });
     }
     
@@ -115,14 +122,17 @@ public class RegistroClientes extends javax.swing.JFrame {
         model.addColumn("Apellidos");
         model.addColumn("Dirección");
         model.addColumn("Teléfono");
+        model.addColumn("Cédula");
         model.addColumn("Correo electrónico");
+        model.addColumn("Sueldo");
         model.addColumn("Fecha de nacimiento");
-        model.addColumn("Límite de crédito");
+        model.addColumn("Fecha de admisión");
+        model.addColumn("ventas");
     }
     
     
     private void setFormStatus() {               
-        Object[] fields = new Object[] { txtName, txtLastName, txtAddress, txtPhone, txtEmail, txtDateOfBirth, txtCreditLimit }; 
+        Object[] fields = new Object[] { txtName, txtLastName, txtAddress, txtPhone, txtIdentityCard, txtEmail, txtSalary, txtDateOfBirth }; 
         
         for (Object field : fields) {
             try {
@@ -171,9 +181,10 @@ public class RegistroClientes extends javax.swing.JFrame {
         txtLastName.setText("");
         txtAddress.setText("");
         txtPhone.setText("");
+        txtIdentityCard.setText("");
         txtEmail.setText("");
+        txtSalary.setText("");
         txtDateOfBirth.setCalendar(null);
-        txtCreditLimit.setText("");
     }
     
     private void toggleButtons(boolean inEdition) {
@@ -188,24 +199,31 @@ public class RegistroClientes extends javax.swing.JFrame {
     private boolean saveOrUpdateArticulo() {
         setFormStatus();
         if (formStatus.isValid()) {             
-            cliente.setName(txtName.getText());
-            cliente.setLastName(txtLastName.getText());
-            cliente.setAddress(txtAddress.getText());
-            cliente.setDateOfBirth(txtDateOfBirth.getDate());
-            cliente.setPhone(txtPhone.getText());
-            cliente.setEmail(txtEmail.getText());
+            empleado.setName(txtName.getText());
+            empleado.setLastName(txtLastName.getText());
+            empleado.setAddress(txtAddress.getText());
+            empleado.setIdentityCard(txtIdentityCard.getText());
+            empleado.setPhone(txtPhone.getText());
+            empleado.setEmail(txtEmail.getText());
+            empleado.setSales(0);
+            empleado.setDateOfAdmission(new Date());
             
             try {
-                cliente.setCreditLimit(Float.parseFloat(txtCreditLimit.getText()));
-                if (cliente.getId() > 0) clienteController.update(cliente);
-                else this.idToAdd = clienteController.create(cliente);
-                updateTable(cliente);
-                clearForm();
-                JOptionPane.showMessageDialog(null, "Cliente " + (cliente.getId() > 0 ? "modificado" : "agregado") + " con éxito", "Success", JOptionPane.INFORMATION_MESSAGE);
-                formStatus.clearStatus();
-                return true;
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, "Debe insertar números enteros o decimales en el campo \"Límite de crédito\"", "Error", JOptionPane.ERROR_MESSAGE);
+                empleado.setDateOfBirth(txtDateOfBirth.getDate());
+                try {
+                    empleado.setSalary(Float.parseFloat(txtSalary.getText()));
+                    if (empleado.getId() > 0) empleadoController.update(empleado);
+                    else this.idToAdd = empleadoController.create(empleado);
+                    updateTable(empleado);
+                    clearForm();
+                    JOptionPane.showMessageDialog(null, "Empleado " + (empleado.getId() > 0 ? "modificado" : "agregado") + " con éxito", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    formStatus.clearStatus();
+                    return true;
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Debe insertar números enteros o decimales en el campo \"Sueldo\"", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (NullPointerException ex) {
+                JOptionPane.showMessageDialog(null, "Fecha inválida", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
             JOptionPane.showMessageDialog(null, formStatus.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
@@ -232,7 +250,6 @@ public class RegistroClientes extends javax.swing.JFrame {
         txtLastName = new javax.swing.JTextField();
         txtPhone = new javax.swing.JTextField();
         txtEmail = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -240,8 +257,11 @@ public class RegistroClientes extends javax.swing.JFrame {
         txtAddress = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        txtCreditLimit = new javax.swing.JTextField();
         txtDateOfBirth = new com.toedter.calendar.JDateChooser();
+        txtIdentityCard = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
+        txtSalary = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
         btnAgregar = new javax.swing.JButton();
         btnSalir = new javax.swing.JButton();
         btnModificar = new javax.swing.JButton();
@@ -272,10 +292,6 @@ public class RegistroClientes extends javax.swing.JFrame {
 
         txtEmail.setName("Correo electrónico"); // NOI18N
 
-        jLabel7.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel7.setText("Límite de crédito:");
-
         jLabel6.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Fecha de nacimiento:");
@@ -302,10 +318,20 @@ public class RegistroClientes extends javax.swing.JFrame {
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Dirección:");
 
-        txtCreditLimit.setName("Límite de crédito"); // NOI18N
-
         txtDateOfBirth.setDateFormatString("dd/MM/yyyy");
         txtDateOfBirth.setName("Fecha de nacimiento"); // NOI18N
+
+        txtIdentityCard.setName("Cédula"); // NOI18N
+
+        jLabel10.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel10.setText("Cédula:");
+
+        txtSalary.setName("Sueldo"); // NOI18N
+
+        jLabel11.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel11.setText("Sueldo:");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -320,7 +346,8 @@ public class RegistroClientes extends javax.swing.JFrame {
                     .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(txtAddress, javax.swing.GroupLayout.DEFAULT_SIZE, 223, Short.MAX_VALUE)
@@ -328,8 +355,9 @@ public class RegistroClientes extends javax.swing.JFrame {
                     .addComponent(txtPhone)
                     .addComponent(txtEmail, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(txtName)
-                    .addComponent(txtCreditLimit)
-                    .addComponent(txtDateOfBirth, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(txtDateOfBirth, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtIdentityCard)
+                    .addComponent(txtSalary))
                 .addGap(43, 43, 43))
         );
         jPanel2Layout.setVerticalGroup(
@@ -353,16 +381,20 @@ public class RegistroClientes extends javax.swing.JFrame {
                     .addComponent(jLabel8))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtIdentityCard, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel10))
+                .addGap(4, 4, 4)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtDateOfBirth, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtCreditLimit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7))
+                    .addComponent(txtSalary, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel11))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtDateOfBirth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(18, Short.MAX_VALUE))
         );
 
@@ -454,11 +486,9 @@ public class RegistroClientes extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(10, 10, 10)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
                         .addComponent(btnAgregar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -470,9 +500,12 @@ public class RegistroClientes extends javax.swing.JFrame {
                             .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(23, 23, 23)))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(63, 63, 63))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -501,24 +534,24 @@ public class RegistroClientes extends javax.swing.JFrame {
         int[] rowIndexes = jTableClientes.getSelectedRows();
         int length = rowIndexes.length;
         int firstIndex = length > 0 ? rowIndexes[0] : 0;
-        String message = length == 0 ? "No hay clientes seleccionados"
-                : length == 1 ? "1 cliente eliminado"
-                : length + " clientes eliminados";
+        String message = length == 0 ? "No hay empleados seleccionados"
+                : length == 1 ? "1 empleado eliminado"
+                : length + " empleados eliminados";
         String confirmMessage = length == 1
-                ? "¿Desea eliminar el cliente seleccionado?"
-                : "¿Desea eliminar los clientes seleccionados?";
+                ? "¿Desea eliminar el empleado seleccionado?"
+                : "¿Desea eliminar los empleados seleccionados?";
         
         int confirm = length > 0 
                 ? JOptionPane.showConfirmDialog(null, confirmMessage, "Seleccione una opción", JOptionPane.YES_NO_OPTION) : -1; 
         
         if (confirm == 0) {
             for (int i = 0; i < rowIndexes.length; i++) {
-                int idCliente = idsClientes.get(firstIndex);
+                int idEmpleado = idsEmpleados.get(firstIndex);
                 DefaultTableModel model = (DefaultTableModel)jTableClientes.getModel();
 
                 model.removeRow(firstIndex);
-                idsClientes.remove(firstIndex);
-                clienteController.delete(idCliente);
+                idsEmpleados.remove(firstIndex);
+                empleadoController.delete(idEmpleado);
             }
         }
         if (confirm == 0 || confirm == -1)
@@ -530,21 +563,22 @@ public class RegistroClientes extends javax.swing.JFrame {
         int length = indexes.length;
         if (length == 1) {
             this.indexRowToModify = indexes[0];
-            int idCliente = this.idsClientes.get(indexRowToModify);
-            this.cliente = this.clienteController.getById(idCliente);
+            int idEmpleado = this.idsEmpleados.get(indexRowToModify);
+            this.empleado = this.empleadoController.getById(idEmpleado);
                         
-            txtName.setText(cliente.getName());
-            txtLastName.setText(cliente.getLastName());
-            txtAddress.setText(cliente.getAddress());
-            txtPhone.setText(cliente.getPhone());
-            txtEmail.setText(cliente.getEmail());
-            txtDateOfBirth.setDate(cliente.getDateOfBirth());
-            txtCreditLimit.setText(String.valueOf(cliente.getCreditLimit()));
+            txtName.setText(empleado.getName());
+            txtLastName.setText(empleado.getLastName());
+            txtAddress.setText(empleado.getAddress());
+            txtPhone.setText(empleado.getPhone());
+            txtIdentityCard.setText(empleado.getIdentityCard());
+            txtEmail.setText(empleado.getEmail());
+            txtSalary.setText(String.valueOf(empleado.getSalary()));
+            txtDateOfBirth.setDate(empleado.getDateOfBirth());
             toggleButtons(true);
         } else {
             String message = length == 0 
-                    ? "No hay ningún cliente seleccionado"
-                    : "Solo se puede seleccionar un solo cliente para modificarlo";
+                    ? "No hay ningún empleado seleccionado"
+                    : "Solo se puede seleccionar un solo empleado para modificarlo";
             
             JOptionPane.showMessageDialog(null, message);
         }
@@ -553,13 +587,13 @@ public class RegistroClientes extends javax.swing.JFrame {
     private void btnGuardarCambiosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarCambiosActionPerformed
         if (saveOrUpdateArticulo()) {
             toggleButtons(false);
-            this.cliente = new Cliente();
+            this.empleado = new Empleado();
         }
     }//GEN-LAST:event_btnGuardarCambiosActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         toggleButtons(false);
-        this.cliente = new Cliente();
+        this.empleado = new Empleado();
         clearForm();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
@@ -580,21 +614,23 @@ public class RegistroClientes extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(RegistroClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RegistroEmpleados.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(RegistroClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RegistroEmpleados.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(RegistroClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RegistroEmpleados.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(RegistroClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RegistroEmpleados.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new RegistroClientes().setVisible(true);
+                new RegistroEmpleados().setVisible(true);
             }
         });
     }
@@ -607,11 +643,12 @@ public class RegistroClientes extends javax.swing.JFrame {
     private javax.swing.JButton btnModificar;
     private javax.swing.JButton btnSalir;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
@@ -619,11 +656,12 @@ public class RegistroClientes extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableClientes;
     private javax.swing.JTextField txtAddress;
-    private javax.swing.JTextField txtCreditLimit;
     private com.toedter.calendar.JDateChooser txtDateOfBirth;
     private javax.swing.JTextField txtEmail;
+    private javax.swing.JTextField txtIdentityCard;
     private javax.swing.JTextField txtLastName;
     private javax.swing.JTextField txtName;
     private javax.swing.JTextField txtPhone;
+    private javax.swing.JTextField txtSalary;
     // End of variables declaration//GEN-END:variables
 }

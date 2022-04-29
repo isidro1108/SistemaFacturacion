@@ -31,7 +31,7 @@
 	<pageHeader>
 		<band height="91" splitType="Stretch">
 			<staticText>
-				<reportElement x="160" y="0" width="257" height="20" uuid="4f2ea392-08ed-4301-8c4e-ca7e35b8a72d"/>
+				<reportElement x="159" y="0" width="276" height="20" uuid="4f2ea392-08ed-4301-8c4e-ca7e35b8a72d"/>
 				<textElement textAlignment="Center">
 					<font size="12" isBold="false"/>
 				</textElement>
