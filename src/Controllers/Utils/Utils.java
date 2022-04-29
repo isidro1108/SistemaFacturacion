@@ -18,6 +18,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.swing.JCheckBox;
 import javax.swing.JPasswordField;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 import org.apache.commons.codec.binary.Base64;
 
 /**
@@ -61,6 +63,15 @@ public class Utils {
             echoChar = jPasswordField.getEchoChar();
         }
         jPasswordField.setEchoChar(jCheckBox.isSelected() ? (char)0 : echoChar);
+    }
+    
+    public static void clearTable(JTable jTable) {
+        int numRows = jTable.getRowCount();
+        DefaultTableModel model = (DefaultTableModel)jTable.getModel();
+        
+        for (int i = 0; i < numRows; i++) {
+            model.removeRow(0);
+        }
     }
     
     public static String encode(String password) {

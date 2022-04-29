@@ -191,6 +191,11 @@ public class MainMenu extends javax.swing.JFrame {
         btnInvoices.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         btnInvoices.setForeground(new java.awt.Color(255, 255, 255));
         btnInvoices.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnInvoices.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnInvoicesActionPerformed(evt);
+            }
+        });
 
         btnArticulos.setBackground(new java.awt.Color(0, 0, 255));
         btnArticulos.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
@@ -373,6 +378,11 @@ public class MainMenu extends javax.swing.JFrame {
         RegistroEmpleados registroEmpleado = new RegistroEmpleados();
         registroEmpleado.setVisible(true);
     }//GEN-LAST:event_btnEmployeeActionPerformed
+
+    private void btnInvoicesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInvoicesActionPerformed
+        Facturas facturas = new Facturas();
+        facturas.setVisible(true);
+    }//GEN-LAST:event_btnInvoicesActionPerformed
 
     /**
      * @param args the command line arguments

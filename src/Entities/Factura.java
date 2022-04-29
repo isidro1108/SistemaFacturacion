@@ -4,6 +4,7 @@
  */
 package Entities;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +24,10 @@ public class Factura {
     private float cash;
     private Date creationDate;
     private List<ArticuloFactura> soldItems;
+    
+    public Factura() {
+        this.soldItems = new ArrayList<>();
+    }
 
     public int getId() {
         return id;

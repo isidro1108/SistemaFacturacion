@@ -79,7 +79,7 @@ public class RegistroClientes extends javax.swing.JFrame {
     
     private void updateRow(Cliente cliente) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        DecimalFormat customFormat = new DecimalFormat("#.00");
+        DecimalFormat customFormat = new DecimalFormat("0.00");
         Object[] clienteData = new Object[] {
             cliente.getName(),
             cliente.getLastName(),
@@ -96,7 +96,7 @@ public class RegistroClientes extends javax.swing.JFrame {
     
     private void addRowToTable(DefaultTableModel model, Cliente cliente) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        DecimalFormat customFormat = new DecimalFormat("#.00");
+        DecimalFormat customFormat = new DecimalFormat("0.00");
         int id = cliente.getId();
         idsClientes.add(id > 0 ? id : this.idToAdd);
         model.addRow(new Object[] {

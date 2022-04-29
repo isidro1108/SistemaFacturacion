@@ -15,6 +15,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -131,6 +133,24 @@ public class ReportController {
             JasperViewer.viewReport(jasperPrint, false);
         } catch (JRException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    public void renderCuadreCaja(List<SoldItem> soldItems, String date, String subTotal, String itbis, String total) {
+        try {
+            HashMap parameters = new HashMap();
+            
+            parameters.put("fechaVenta", date);
+            parameters.put("generalSubTotal", subTotal);
+            parameters.put("generalItbis", itbis);
+            parameters.put("total", total);
+            
+            String reportPath = "C:\\Users\\euris\\Escritorio\\NetBeans Projects\\SistemaFacturacion\\src\\Views\\Reports\\CuadreCaja.jrxml";
+            JasperReport jasperReport = JasperCompileManager.compileReport(reportPath);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JRBeanCollectionDataSource(soldItems));
+            JasperViewer.viewReport(jasperPrint, false);
+        } catch (JRException ex) {
+            Logger.getLogger(ReportController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
