@@ -44,7 +44,7 @@ public class RegistroEmpleados extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         setResizable(false);
-        setTitle("Clientes");
+        setTitle("Empleados");
         initTable();
         jPanel1.setBackground(Constants.Colors.LIGHT_BLUE);
         jPanel2.setBackground(Constants.Colors.DARK_BLUE);
@@ -282,7 +282,7 @@ public class RegistroEmpleados extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTableClientes);
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jLabel1.setText("Registro de Clientes");
+        jLabel1.setText("Registro de Empleados");
 
         txtName.setName("Nombres"); // NOI18N
 
